@@ -1,0 +1,396 @@
+name: Deploy to stage
+
+on:
+  push:
+    branches:
+      - "staging"
+
+jobs:
+  identify-changes:
+    name: 🎛️ Identify Changes
+    runs-on: ubuntu-latest
+    outputs:
+      api_gateway: ${{ steps.filter.outputs.api_gateway }}
+      auth_management: ${{ steps.filter.outputs.auth_management }}
+      notification_management: ${{ steps.filter.outputs.notification_management }}
+      product_management: ${{ steps.filter.outputs.product_management }}
+      sample_management: ${{ steps.filter.outputs.sample_management }}
+      survey_management: ${{ steps.filter.outputs.survey_management }}
+      user_management: ${{ steps.filter.outputs.user_management }}
+      widget_management: ${{ steps.filter.outputs.widget_management }}
+      catalogue_management: ${{ steps.filter.outputs.catalogue_management }}
+      image_tag: ${{ steps.image_tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          base: staging
+          filters: |
+            api_gateway:
+              - 'apps/api-gateway-service/**'
+              - 'packages/proto-definition/**'
+              - 'packages/database/src/prisma/schema/**'
+              - 'docker/**'
+              - 'packages/common/**'
+            auth_management:
+              - 'apps/auth-management-service/**'
+              - 'packages/database/src/prisma/schema/**'
+              - 'docker/**'
+              - 'packages/common/**'
+            notification_management:
+              - 'apps/notification-management-service/**'
+              - 'packages/database/src/prisma/schema/**'
+              - 'docker/**'
+              - 'packages/common/**'
+            product_management:
+              - 'apps/product-management-service/**'
+              - 'packages/database/src/prisma/schema/**'
+              - 'docker/**'
+              - 'packages/common/**'
+            sample_management:
+              - 'apps/sample-management-service/**'
+              - 'packages/database/src/prisma/schema/**'
+              - 'docker/**'
+              - 'packages/common/**'
+            survey_management:
+              - 'apps/survey-management-service/**'
+              - 'packages/database/src/prisma/schema/**'
+              - 'docker/**'
+              - 'packages/common/**'
+            user_management:
+              - 'apps/user-management-service/**'
+              - 'packages/database/src/prisma/schema/**'
+              - 'docker/**'
+              - 'packages/common/**'
+            widget_management:
+              - 'apps/widget-management-service/**'
+              - 'packages/database/src/prisma/schema/**'
+              - 'docker/**'
+              - 'packages/common/**'
+            catalogue_management:
+              - 'apps/catalogue-management-service/**'
+              - 'packages/database/src/prisma/schema/**'
+              - 'docker/**'
+              - 'packages/common/**'
+
+      - name: Generate IMAGE_TAG
+        id: image_tag
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          TIMESTAMP=$(date +'%Y-%m-%d-%H-%M')
+          echo "tag=${COMMIT_HASH}-${TIMESTAMP}" >> "$GITHUB_OUTPUT"
+
+  deploy-api-gateway:
+    needs: identify-changes
+    if: ${{ needs.identify-changes.outputs.api_gateway == 'true' }}
+    name: 🚏 Deploy Api Gateway
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.API_GATEWAY_REPO_NAME }}
+          IMAGE_TAG: ${{ needs.identify-changes.outputs.image_tag }}
+        run: |
+          docker build -f ./docker/base.Dockerfile --build-arg PROJECT=${{ vars.API_GATEWAY_SERVICE }} --build-arg PORT=${{ vars.API_GATEWAY_PORT }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy-auth-management:
+    needs: identify-changes
+    if: ${{ needs.identify-changes.outputs.auth_management == 'true' }}
+    name: 🔐 Deploy Auth Management
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.AUTH_REPO_NAME }}
+          IMAGE_TAG: ${{ needs.identify-changes.outputs.image_tag }}
+        run: |
+          docker build -f ./docker/base.Dockerfile --build-arg PROJECT=${{ vars.AUTH_MANAGEMENT_SERVICE }} --build-arg PORT=${{ vars.AUTH_MANAGEMENT_PORT }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy-notification-management:
+    needs: identify-changes
+    if: ${{ needs.identify-changes.outputs.notification_management == 'true' }}
+    name: 📲 Deploy Notification Management
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.NOTIFICATION_REPO_NAME }}
+          IMAGE_TAG: ${{ needs.identify-changes.outputs.image_tag }}
+        run: |
+          docker build -f ./docker/base.Dockerfile --build-arg PROJECT=${{ vars.NOTIFICATION_MANAGEMENT_SERVICE }} --build-arg PORT=${{ vars.NOTIFICATION_MANAGEMENT_PORT }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy-product-management:
+    needs: identify-changes
+    if: ${{ needs.identify-changes.outputs.product_management == 'true' }}
+    name: 🛍️ Deploy Product Management
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.PRODUCT_REPO_NAME }}
+          IMAGE_TAG: ${{ needs.identify-changes.outputs.image_tag }}
+        run: |
+          docker build -f ./docker/base.Dockerfile --build-arg PROJECT=${{ vars.PRODUCT_MANAGEMENT_SERVICE }} --build-arg PORT=${{ vars.PRODUCT_MANAGEMENT_PORT }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy-sample-management:
+    needs: identify-changes
+    if: ${{ needs.identify-changes.outputs.sample_management == 'true' }}
+    name: 🛒 Deploy Sample Management
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.SAMPLE_REPO_NAME }}
+          IMAGE_TAG: ${{ needs.identify-changes.outputs.image_tag }}
+        run: |
+          docker build -f ./docker/base.Dockerfile --build-arg PROJECT=${{ vars.SAMPLE_MANAGEMENT_SERVICE }} --build-arg PORT=${{ vars.SAMPLE_MANAGEMENT_PORT }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy-survey-management:
+    needs: identify-changes
+    if: ${{ needs.identify-changes.outputs.survey_management == 'true' }}
+    name: 📝 Deploy Survey Management
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.SURVEY_REPO_NAME }}
+          IMAGE_TAG: ${{ needs.identify-changes.outputs.image_tag }}
+        run: |
+          docker build -f ./docker/base.Dockerfile --build-arg PROJECT=${{ vars.SURVEY_MANAGEMENT_SERVICE }} --build-arg PORT=${{ vars.SURVEY_MANAGEMENT_PORT }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy-user-management:
+    needs: identify-changes
+    if: ${{ needs.identify-changes.outputs.user_management == 'true' }}
+    name: 👨‍💻 Deploy User Management
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.USER_REPO_NAME }}
+          IMAGE_TAG: ${{ needs.identify-changes.outputs.image_tag }}
+        run: |
+          docker build -f ./docker/base.Dockerfile --build-arg PROJECT=${{ vars.USER_MANAGEMENT_SERVICE }} --build-arg PORT=${{ vars.USER_MANAGEMENT_PORT }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy-widget-management:
+    needs: identify-changes
+    if: ${{ needs.identify-changes.outputs.widget_management == 'true' }}
+    name: ⚙ Deploy Widget Management
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.WIDGET_REPO_NAME }}
+          IMAGE_TAG: ${{ needs.identify-changes.outputs.image_tag }}
+        run: |
+          docker build -f ./docker/base.Dockerfile --build-arg PROJECT=${{ vars.WIDGET_MANAGEMENT_SERVICE }} --build-arg PORT=${{ vars.WIDGET_MANAGEMENT_PORT }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy-catalogue-management:
+    needs: identify-changes
+    if: ${{ needs.identify-changes.outputs.catalogue_management == 'true' }}
+    name: 📚 Deploy Catalogue Management
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.CATALOGUE_REPO_NAME }}
+          IMAGE_TAG: ${{ needs.identify-changes.outputs.image_tag }}
+        run: |
+          docker build -f ./docker/base.Dockerfile --build-arg PROJECT=${{ vars.CATALOGUE_MANAGEMENT_SERVICE }} --build-arg PORT=${{ vars.CATALOGUE_MANAGEMENT_PORT }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

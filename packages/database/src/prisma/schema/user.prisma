@@ -1,0 +1,49 @@
+model User {
+    id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    email               String    @unique
+    password            String
+    first_name          String?
+    last_name           String?
+    createdAt           DateTime  @default(now())
+    updatedAt           DateTime  @updatedAt
+    otp                 Int?
+    profile_pic         String?
+    is_deleted          Boolean?  @default(false)
+    role                String    @default("user")
+    notification_limit  Int?
+    is_verified         Boolean   @default(false)
+    device_endpoint_arn String?
+    phone_number        String?
+    birth_date          DateTime?
+    age                 Int?
+    auth_provider       String?
+    address             String?
+    city                String?
+    postcode            Int?
+    no_of_adult         Int?
+    no_of_children      Int?
+    gender              Gender?
+    region              Region?
+
+    Preference        Preference?
+    response          SurveyResponse[]
+    Basket            Basket[]
+    Notification      Notification[]
+    PriceAlert        PriceAlert[]
+    sampleResponse    SampleResponse[]
+    users             SampleUser[]
+    UserLoginActivity UserLoginActivity[]
+}
+
+enum AuthProviderEnum {
+    INTERNAL
+    GOOGLE
+    META
+    APPLE
+}
+
+enum Region {
+    METRO
+    URBAN
+    RURAL
+}

@@ -1,0 +1,30 @@
+{
+    "name": "@atc/grpc-server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "exports": {
+        ".": {
+            "types": "./src/index.ts",
+            "default": "./dist/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsc -b"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@grpc/grpc-js": "^1.12.2",
+        "@atc/typescript-config": "workspace:*",
+        "@atc/logger": "workspace:*",
+        "@atc/common": "workspace:*",
+        "@atc/db": "workspace:*",
+        "jsonwebtoken": "^9.0.2"
+    },
+    "devDependencies": {
+        "typescript": "5.5.4",
+        "@types/jsonwebtoken": "^9.0.7"
+    }
+}

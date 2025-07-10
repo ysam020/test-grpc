@@ -1,0 +1,240 @@
+syntax = "proto3";
+package user;
+
+import "../product/product.proto";
+import "../chart/chart.proto";
+import "../notification/notification.proto";
+import "../product/product.proto";
+import "../chart/chart.proto";
+import "../notification/notification.proto";
+
+message User {
+    string id = 1;
+    string email = 2;
+    string first_name = 3;
+    string last_name = 4;
+}
+
+message UserWithPic {
+    string id = 1;
+    string email = 2;
+    string first_name = 3;
+    string last_name = 4;
+    string profile_pic = 5;
+}
+
+message UserWithPreferences {
+    string id = 1;
+    string email = 2;
+    string first_name = 3;
+    string last_name = 4;
+    string profile_pic = 5;
+    Preferences preferences = 6;
+    string birth_date = 7;
+    string address = 8;
+    string city = 9;
+    int32 postcode = 10;
+    int32 no_of_adult = 11;
+    int32 no_of_child = 12;
+    string phone_number = 13;
+    string gender = 14;
+    string createdAt = 15;
+    bool sample_registered = 16;
+}
+
+message UpdateUserRequest {
+    string id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    bytes profile_pic = 4;
+    repeated string retailer_ids = 5;
+    string birth_date = 6;
+    string address = 7;
+    string city = 8;
+    int32 postcode = 9;
+    int32 no_of_adult = 10;
+    int32 no_of_child = 11;
+    string phone_number = 12;
+    string gender = 13;
+    string mime_type = 14;
+    int32 content_length = 15;
+}
+
+message Retailer {
+    string id = 1;
+    string retailer_name = 2;
+    string image_url = 3;
+}
+
+message Preferences {
+    repeated Retailer retailers = 1;
+}
+
+message UpdateUserResponse {
+    UserWithPreferences data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message GetSingleUserRequest {
+    string id = 1;
+}
+
+message GetSingleUserResponse {
+    UserWithPreferences data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message DeleteUserRequest {
+    string id = 1;
+}
+
+message DeleteUserResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message GetUsersRequest {
+    int32 page = 1;
+    int32 limit = 2;
+}
+
+message AdminUsersData {
+    string id = 1;
+    string email = 2;
+    int32 postcode = 3;
+    int32 no_of_adult = 4;
+    int32 no_of_child = 5;
+    string gender = 6;
+    int32 age = 7;
+}
+
+message RestrictedAdminUsersData {
+    repeated AdminUsersData users = 1;
+    int32 total_count = 2;
+}
+
+message RestrictedUserData {
+    string id = 1;
+    string email = 2;
+}
+
+message GetUserAdminResponse {
+    AdminUsersData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message GetUsersResponse {
+    RestrictedAdminUsersData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message ChangePasswordRequest {
+    string id = 1;
+    string current_password = 2;
+    string new_password = 3;
+}
+
+message ChangePasswordResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+
+message AddToBasketRequest {
+    string product_id = 1;
+    int32 quantity = 2;
+}
+
+message  BasketData {
+    string id = 1;
+    string user_id = 2;
+    string master_product_id = 3;
+    int32 quantity = 4;
+}
+
+message AddToBasketResponse {
+    string message = 1;
+    int32 status = 2;
+    BasketData data = 3;
+}
+
+message RemoveFromBasketRequest {
+    string master_product_id = 1;
+}
+
+message RemoveFromBasketResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message ClearBasketRequest {
+}
+
+message ClearBasketResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message ViewBasketRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string retailer_id = 3;
+}
+
+message ViewBasketResponse {
+    string message = 1;
+    int32 status = 2;
+    ViewBasketData data = 3;
+}
+
+message ViewBasketData {
+    string basket_id = 1;
+    repeated ProductData basket_item = 2;
+    repeated RetailerTotal retailer_totals = 3;
+    double best_total = 4; 
+    int32 total_count = 5;
+}
+
+message RetailerTotal {
+    string retailer_name = 1;
+    double total_price = 2;
+}
+
+message AcceptDeviceTokenRequest {
+    string device_token = 1;
+}
+
+message AcceptDeviceTokenResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message GetUserEngagementRequest {
+    string type = 1;
+}
+
+message GetUserEngagementResponse {
+    string message = 1;
+    int32 status = 2;
+    repeated ChartData data = 3;
+}
+
+service UserService {
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
+    rpc GetSingleUser (GetSingleUserRequest) returns (GetSingleUserResponse);
+    rpc GetSingleUserAmin (GetSingleUserRequest) returns (GetUserAdminResponse);
+    rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse);
+    rpc GetUsers (GetUsersRequest) returns (GetUsersResponse);
+    rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
+    rpc AddToBasket (AddToBasketRequest) returns (AddToBasketResponse);
+    rpc RemoveFromBasket (RemoveFromBasketRequest) returns (RemoveFromBasketResponse);
+    rpc ClearBasket (ClearBasketRequest) returns (ClearBasketResponse);
+    rpc ViewBasket (ViewBasketRequest) returns (ViewBasketResponse);
+    rpc AcceptDeviceToken (AcceptDeviceTokenRequest) returns (AcceptDeviceTokenResponse);
+    rpc GetUserEngagement (GetUserEngagementRequest) returns (GetUserEngagementResponse);
+    rpc GetMonthlyActiveUsersCount (notification.Empty) returns (notification.CountResponse);
+}

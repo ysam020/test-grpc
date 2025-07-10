@@ -1,0 +1,25 @@
+{
+  "name": "@atc/grpc-config",
+  "version": "1.0.0",
+  "description": "A grpc common client",
+  "main": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@atc/grpc-client": "workspace:*",
+    "@atc/proto": "workspace:*",
+    "@atc/typescript-config": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "5.5.4"
+  },
+  "author": "",
+  "license": "ISC"
+}

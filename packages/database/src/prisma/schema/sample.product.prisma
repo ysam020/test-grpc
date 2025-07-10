@@ -1,0 +1,11 @@
+model SampleProduct {
+    id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    sample_id  String   @unique @db.Uuid
+    product_id String?  @db.Uuid
+    image      String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    sample  Sample         @relation(fields: [sample_id], references: [id])
+    product MasterProduct? @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}

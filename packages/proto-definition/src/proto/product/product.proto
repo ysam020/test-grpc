@@ -1,0 +1,856 @@
+syntax = "proto3";
+package product;
+
+import "../chart/chart.proto";
+import "../catalogue/catalogue.proto";
+
+message ProductWithImage {
+   string id = 1;
+   string product_name = 2;
+   string image_url = 3;
+   int32 basket_quantity = 4;
+   bool is_in_basket = 5;
+   bool is_price_alert_active = 6;
+   string category_id = 7;
+}
+
+message RetailerPriceWithDetails {
+    string retailer_id = 1;
+    string retailer_name = 2;
+    string retailer_price = 3;
+    string saving_percentage = 4;
+    string per_unit_price = 5;
+    string retailer_site_url = 6;
+    string product_url = 7;
+}
+
+message ProductBestDeal {
+    string retailer_id = 1;
+    string retailer_name = 2;
+    string retailer_price = 3;
+    string saving_percentage = 4;
+    string per_unit_price = 5;
+    string product_url = 6;
+}
+
+message BasketData {
+    string basket_id = 1;
+    int32 quantity = 2;
+}
+
+message ProductData {
+    ProductWithImage product_data = 1;
+    ProductBestDeal best_deal = 2;
+    repeated RetailerPriceWithDetails retailer_prices = 3;
+    string recommended_retailer_prices = 4;
+}
+
+message RetailerPriceData {
+    string retailer_id = 1;
+    string retailer_name = 2;
+    string retailer_price = 3;
+    string saving_percentage = 4;
+    string per_unit_price = 5;
+    string retailer_site_url = 6;
+    string product_url = 7;
+    string retailer_code = 8;
+    string offer_info = 9;
+    string promotion_type = 10;
+}
+
+message ProductDetailsData {
+    ProductDetail product_data = 1;
+    ProductBestDeal best_deal = 2;
+    repeated RetailerPriceData retailer_prices = 3;
+    string recommended_retailer_prices = 4;
+}
+
+message ProductDetail {
+    string product_name = 2;
+    string id = 1;
+    string image_url = 3;
+    int32 basket_quantity = 4;
+    bool is_in_basket = 5;
+    bool is_price_alert_active = 6;
+    string category_id = 7;
+    string category_name = 8;
+    string pack_size = 9;
+    string barcode = 10;
+    string brand_id = 11;
+    string brand_name = 12;
+    bool private_label = 13;
+    double size = 14;
+    string unit = 15;
+    string configuration = 16;
+    string a2c_size = 17; 
+}
+
+message ProductDetailsRequest {
+    string id = 1;
+    string barcode = 2;
+}
+
+message ProductDetailsResponse {
+    ProductDetailsData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message ProductsData {
+    repeated ProductData products = 1;
+    int32 total_count = 2;
+    repeated SubCategoryData categories = 3;
+}
+
+message getAllProductsRequest {
+    repeated string product_ids = 1;
+    repeated string brand_ids = 2;
+    string promotion_type = 3;
+    repeated string retailer_ids = 4;
+    repeated string category_ids = 5;
+    string sort_by_field = 6;
+    string sort_by_order = 7;
+    int32 page = 8;
+    int32 limit = 9;
+}
+
+message getAllProductsResponse {
+    ProductsData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message getCategoryListRequest {
+    string keyword = 1;
+    int32 page = 2;
+    int32 limit = 3;
+    string sort_by_order = 4;
+}
+
+message CategoryData {
+    string id = 1;
+    string category_name = 2;
+    bool has_subcategory = 3;
+}
+
+message SubCategoryData {
+    string id = 1;
+    string category_name = 2;
+}
+
+message getCategoryListData {
+    repeated CategoryData categories = 1;
+    int32 total_count = 2;
+}
+
+message SubCategoryListData {
+    string id = 1;
+    string category_name = 2;
+    bool has_subcategory = 3;
+}
+
+message getSubCategoryListData {
+    repeated SubCategoryListData categories = 1;
+}
+
+message getCategoryListResponse {
+    getCategoryListData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message getSubCategoriesRequest {
+    string category_id = 1;
+}
+
+message getSubCategoriesResponse {
+    getSubCategoryListData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message ProductSearchRequest {
+    string keyword = 1;
+    int32 page = 2;
+    int32 limit = 3;
+}
+
+message ProductSearchData {
+    string id = 1;
+    string product_name = 2;
+    string pack_size = 3;
+    string image_url = 4;
+    string brand_name = 5;
+    string category_name = 6;
+}
+
+message MultipleProductSearchData {
+    repeated ProductSearchData products = 1;
+    int32 total_count = 2;
+}
+
+message ProductSearchResponse {
+    MultipleProductSearchData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message getProductListRequest {
+    string user_id = 1;
+    repeated string product_ids = 2;
+    repeated string brand_ids = 3;
+    string promotion_type = 4;
+    repeated string retailer_ids = 5;
+    string category_id = 6;
+    string sort_by_field = 7;
+    string sort_by_order = 8;
+    int32 page = 9;
+    int32 limit = 10;
+}
+
+message ProductListData {
+    ProductWithImage product_data = 1;
+    ProductBestDeal best_deal = 2;
+    repeated RetailerPriceWithDetails retailer_prices = 3;
+    string recommended_retailer_prices = 4;
+    bool is_price_alert_enabled = 5;
+    bool product_added_to_basket = 6;
+    int32 quantity_in_basket = 7;
+}
+
+message MultipleProductList {
+    repeated ProductListData products = 1;
+    int32 total_count = 2;
+}
+
+message getProductListResponse {
+    MultipleProductList data = 1;
+    int32 status = 2;
+    string message = 3;
+}
+
+message getPotentialMatchListRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string keyword = 3;
+    string sort_by_order = 4;
+    string intervention = 5;
+}
+
+message ToBeMatchedProductData {
+    string id = 1;
+    string barcode = 2;
+    string product_name = 3;
+    string brand_name = 4;
+    string category_name = 5;
+    string image_url = 6;
+    string product_url = 7;
+    string retailer_id = 8;
+    string retailer_name = 9;
+    string retailer_code = 10;
+    string price = 11;
+    string offer_info = 12;
+    string promotion_type = 13;
+    string per_unit_price = 14;
+    string pack_size = 15;
+    string category_id = 16;
+    repeated PotentialMatchData potential_matches = 17;
+    bool intervention = 18;
+    double size = 19;
+    string unit = 20;
+    string configuration = 21;
+    string a2c_size = 22; 
+    string current_price = 23;
+}
+
+message PotentialMatchData {
+    string id = 1;
+    string barcode = 2;
+    string product_name = 3;
+    string brand_name = 4;
+    string category_name = 5;
+    string image_url = 6;
+    string price = 7;
+    string match_confidence = 8;
+    string pack_size = 9;
+    string a2c_size = 10;
+}
+
+message PotentialMatchListData {
+    ToBeMatchedProductData product_to_match = 1;
+}
+
+message MultiplePotentialMatchData {
+    repeated PotentialMatchListData product_list = 1;
+    int32 total_count = 2;
+}
+
+message getPotentialMatchListResponse {
+    MultiplePotentialMatchData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message matchProductsRequest {
+    string product_to_match_id = 1;
+    string potential_match_id = 2;
+}
+
+message matchProductsResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message addBrandRequest {
+    string brand_name = 1;
+    bool private_label = 2;
+    bytes image = 3;
+    string mime_type = 4;
+    int32 content_length = 5;
+    string supplier_id = 6;
+}
+
+message addBrandResponse {
+    string message = 1;
+    int32 status = 2;
+    BrandData data = 3;
+}
+
+message UpdateBrandRequest {
+    string brand_id = 1;
+    string brand_name = 2;
+    bool private_label = 3;
+    bytes image = 4;
+    string mime_type = 5;
+    int32 content_length = 6;
+    string supplier_id = 7;
+}
+
+message addProductBySuggestionListRequest {
+    string product_id = 1;
+    string product_name = 2;
+    string barcode = 3;
+    string retailer_id = 4;
+    string category_id = 5;
+    string brand_name = 6;
+    string pack_size = 7;
+    string image_url = 8;
+    string retailer_code = 9;
+    string price = 10;
+    string per_unit_price = 11;
+    string offer_info = 12;
+    string promotion_type = 13;
+    string product_url = 14;
+    string rrp = 15;
+    bytes image = 16;
+    string mime_type = 17;
+    int32 content_length = 18;
+    double size = 19;
+    string unit = 20;
+    string configuration = 21;
+    string a2c_size = 22;
+}
+
+message addProductBySuggestionListResponse {    
+    string message = 1;
+    int32 status = 2;
+}
+
+message addCategoryRequest {
+    string category_name = 1;
+    string parent_category_id = 2;
+    bytes image = 3;
+    string mime_type = 4;
+    int32 content_length = 5;
+}
+
+message addCategoryResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message syncDataInElasticRequest {
+}
+
+message syncDataInElasticResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message updateProductRequest {
+    string product_id = 1;
+    string product_name = 2;
+    string barcode = 3;
+    string category_id = 4;
+    string brand_id = 5;
+    string pack_size = 6;
+    string promotion_type = 7;
+    double size = 8;
+    string unit = 9;
+    string configuration = 10;
+    string a2c_size = 11;
+}
+
+message updateProductResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message getProductListWithRetailerCodeRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string keyword = 3;
+    string sort_by_order = 4;
+}
+
+message RetailerWithCode {
+    string retailer_id = 1;
+    string retailer_name = 2;
+    string retailer_code = 3;
+    string product_url = 4;
+}
+
+message ProductListWithRetailerCodeData {
+    string id = 1;
+    string product_name = 2;
+    string pack_size = 3;
+    string image_url = 4;
+    string brand_name = 5;
+    string category_name = 6;
+    repeated RetailerWithCode retailers_data = 7;
+    string barcode = 8;
+    bool private_label = 9;
+    string a2c_size = 10;
+}
+
+message MultiRetailerData {
+    repeated ProductListWithRetailerCodeData products = 1;
+    int32 total_count = 2; 
+}
+
+message getProductListWithRetailerCodeResponse {
+    MultiRetailerData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message RetailerData {
+    string id = 1;
+    string retailer_name = 2;
+}
+
+message MultiRetailerList {
+    repeated RetailerData retailers = 1;
+    int32 total_count = 2;
+}
+
+message getRetailerListRequest {
+    string keyword = 1;
+    string sort_by_order = 2;
+    int32 page = 3;
+    int32 limit = 4;
+}
+
+message getRetailerListResponse {
+    MultiRetailerList data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message BrandData {
+    string id = 1;
+    string brand_name = 2;
+    bool private_label = 3;
+}
+
+message getBrandListRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string keyword = 3;
+    string sort_by_order = 4;
+    string sort_by_field = 5;
+}
+
+message Brand {
+    string id = 1;
+    string brand_name = 2;
+    bool private_label = 3;
+    string supplier_name = 4;
+    string supplier_id = 5;
+}
+
+message MultiBrandData {
+    repeated Brand brands = 1;
+    int32 total_count = 2;
+}
+
+message getBrandListResponse {
+    MultiBrandData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message CategoryDataWithParentDetails {
+    string id = 1;
+    string category_name = 2;
+    string parent_category_id = 3;
+    string parent_category_name = 4;
+}
+
+message MultiCategoryData {
+    repeated CategoryDataWithParentDetails categories = 1;
+    int32 total_count = 2;
+}
+
+message getAllCategoryListResponse {
+    MultiCategoryData data = 1;
+    string message = 2;
+    int32 status = 3;
+}
+
+message Count {
+    int32 products_count = 1;
+    int32 new_products_count = 2;
+    int32 unmatched_products_count = 3;
+}
+
+message ProductCountResponse {
+    string message = 1;
+    int32 status = 2;
+    Count data = 3;
+}
+
+message NewProductList {
+    string product_name = 1;
+    string image_url = 2;
+    string pack_size = 3;
+    string barcode = 4;
+    string brand_name = 5;
+    string category_name = 6;
+}
+
+message MultipleNewProductList {
+    repeated NewProductList products = 1;
+}
+
+message NewProductListResponse {
+    string message = 1;
+    int32 status = 2;
+    MultipleNewProductList data = 3;
+}
+
+message getProductByCategoryCountData {
+    string category_name = 1;
+    int32 count = 2;
+}
+
+message getProductByCategoryCountResponse {
+    string message = 1;
+    int32 status = 2;
+    repeated getProductByCategoryCountData data = 3;
+}
+
+message getProductByRetailerCountData {
+    string retailer_name = 1;
+    int32 count = 2;
+}
+message getProductByRetailerCountResponse {
+    string message = 1;
+    int32 status = 2;
+    repeated getProductByRetailerCountData data = 3;
+}
+
+message GetProductEngagementRequest {
+    string type = 1;
+}
+
+message GetProductEngagementResponse {
+    repeated ChartData data = 1;
+    int32 status = 2;
+    string message = 3;
+}
+
+message Empty {}
+
+message ExportToExcelForRetailerListRequest {
+    string email = 1;
+    string keyword = 2;
+    string sort_by_order = 3;
+    string type = 4;
+}
+
+message ExportToExcelForRetailerListResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message updateCategoryRequest {
+    string category_id = 1;
+    bytes image = 2;
+    string category_name = 3;
+    string parent_category_id = 4;
+    string mime_type = 5;
+    int32 content_length = 6;
+}
+
+message updateCategoryResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message addRetailerRequest {
+    string retailer_name = 1;
+    bytes image = 2;
+    string mime_type = 3;
+    int32 content_length = 4;
+}
+
+message addRetailerResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message updateRetailerRequest {
+    string id = 1;
+    string retailer_name = 2;
+    bytes image = 3;
+    string mime_type = 4;
+    int32 content_length = 5;
+}
+
+message RetailerDetails {
+    string retailer_id = 1;
+    double price = 2;
+    string retailer_code = 3;
+    string per_unit_price = 4;
+    string offer_info = 5;
+    string product_url = 6;
+    string promotion_type = 7;
+}
+
+message AddProductRequest {
+    string product_name = 1;
+    bytes image = 2;
+    string mime_type = 3;
+    string barcode = 4;
+    string brand_id = 5;
+    string category_id = 6;
+    string pack_size = 7;
+    repeated RetailerDetails retailer_details = 8;
+    int32 content_length = 9;
+    double rrp = 10;
+    double size = 11;
+    string unit = 12;
+    string configuration = 13;
+    string a2c_size = 14;
+}
+
+message AddProductData {
+    string product_id = 1;
+    string product_name = 2;
+}
+
+message AddProductResponse {
+    string message = 1;
+    int32 status = 2;
+    AddProductData data = 3;
+}
+
+message deleteCategoryRequest {
+    string category_id = 1;
+}
+
+message deleteCategoryResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message deleteProductRequest {
+    string id = 1;
+}
+
+message deleteProductResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message UpdateAdminProductRequest {
+    string product_id = 1;
+    string product_name = 2;
+    bytes image = 3;
+    string mime_type = 4;
+    string barcode = 5;
+    string brand_id = 6;
+    string category_id = 7;
+    string pack_size = 8;
+    repeated RetailerDetails retailer_details = 9;
+    int32 content_length = 10;
+    double rrp = 11;
+    double size = 12;
+    string unit = 13;
+    string configuration = 14;
+    string a2c_size = 15;
+}
+
+message UpdateAdminProductResponse {
+    string message = 1;
+    int32 status = 2;
+    AddProductData data = 3;
+}
+
+message CheckBarcodeExistenceRequest {
+    string barcode = 1;
+}
+
+message CheckBarcodeExistenceData {
+    bool barcode_exists = 1;
+}
+
+message CheckBarcodeExistenceResponse {
+    string message = 1;
+    int32 status = 2;
+    CheckBarcodeExistenceData data = 3;
+}
+
+message AddBarcodeToRedisResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message GetProductByIDsRequest {
+    repeated string product_ids = 1;
+}
+
+message GetProductByIDsResponse {
+    string message = 1;
+    int32 status = 2;
+    repeated string product_ids = 3;
+}
+
+message GetProductsForProductGroupRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string keyword = 3;
+    repeated string brand_ids = 4;
+    repeated string category_ids = 5;
+    string size = 6;
+    string barcode = 7;
+    double min_price = 8;
+    double max_price = 9;
+    string group_id = 10;
+}
+
+message ProductsDataForProductGroup {
+    repeated Product products = 1;
+    int32 total_count = 2;
+}
+
+message GetProductsForProductGroupResponse {
+    string message = 1;
+    int32 status = 2;
+    ProductsDataForProductGroup data = 3;
+}
+
+message AddSupplierRequest {
+    string supplier_name = 1;
+    repeated string brand_ids = 2;
+    bytes image = 3;
+    string mime_type = 4;
+    int32 content_length = 5;
+}
+
+message SupplierData {
+    string id = 1;
+    string supplier_name = 2;
+}
+
+message AddSupplierResponse {
+    string message = 1;
+    int32 status = 2;
+    SupplierData data = 3;
+}
+
+message GetSupplierListRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string keyword = 3;
+    string sort_by_order = 4;
+}
+
+message SupplierDetails {
+    string id = 1;
+    string supplier_name = 2;
+    repeated BrandData brands = 3;
+}
+
+message SupplierList {
+    repeated SupplierDetails suppliers = 1;
+    int32 total_count = 2;
+}
+
+message GetSupplierListResponse {
+    string message = 1;
+    int32 status = 2;
+    SupplierList data = 3;
+}
+
+message UpdateSupplierRequest {
+    string supplier_id = 1;
+    string supplier_name = 2;
+    repeated string brand_ids = 3;
+    bytes image = 4;
+    string mime_type = 5;
+    int32 content_length = 6;
+}
+
+message ToggleInterventionRequest {
+    string suggestion_id = 1;
+}
+
+message ImportExcelDataRequest {
+    bytes file = 1;
+    string model = 2;
+}
+
+service ProductService {
+    rpc ProductDetails (ProductDetailsRequest) returns (ProductDetailsResponse);
+    rpc getAllProducts (getAllProductsRequest) returns (getAllProductsResponse);
+    rpc getCategoryList (getCategoryListRequest) returns (getCategoryListResponse);
+    rpc getSubCategories (getSubCategoriesRequest) returns (getSubCategoriesResponse);
+    rpc ProductSearch (ProductSearchRequest) returns (ProductSearchResponse);
+    rpc getProductList (getProductListRequest) returns (getProductListResponse);
+    rpc getPotentialMatchList (getPotentialMatchListRequest) returns (getPotentialMatchListResponse);
+    rpc matchProducts (matchProductsRequest) returns (matchProductsResponse);
+    rpc addProductBySuggestionList (addProductBySuggestionListRequest) returns (addProductBySuggestionListResponse);
+    rpc addBrand (addBrandRequest) returns (addBrandResponse);
+    rpc addCategory (addCategoryRequest) returns (addCategoryResponse);
+    rpc syncDataInElastic (syncDataInElasticRequest) returns (syncDataInElasticResponse);
+    rpc updateProduct (updateProductRequest) returns (updateProductResponse);
+    rpc getProductListWithRetailerCode (getProductListWithRetailerCodeRequest) returns (getProductListWithRetailerCodeResponse);
+    rpc getRetailerList (getRetailerListRequest) returns (getRetailerListResponse);
+    rpc getBrandList (getBrandListRequest) returns (getBrandListResponse);
+    rpc getAllCategoryList (getProductListWithRetailerCodeRequest) returns (getAllCategoryListResponse);
+    rpc getProductsCount (Empty) returns (ProductCountResponse);
+    rpc getNewProductList (Empty) returns (NewProductListResponse);
+    rpc getProductByCategoryCount (Empty) returns (getProductByCategoryCountResponse);
+    rpc getProductByRetailerCount (Empty) returns (getProductByRetailerCountResponse);
+    rpc getProductEngagement (GetProductEngagementRequest) returns (GetProductEngagementResponse);
+    rpc ExportToExcel (ExportToExcelForRetailerListRequest) returns (ExportToExcelForRetailerListResponse);
+    rpc updateCategory (updateCategoryRequest) returns (addCategoryResponse);
+    rpc addRetailer (addRetailerRequest) returns (addRetailerResponse);
+    rpc updateRetailer (updateRetailerRequest) returns (addRetailerResponse);
+    rpc AddProduct (AddProductRequest) returns (AddProductResponse);
+    rpc deleteCategory (deleteCategoryRequest) returns (deleteCategoryResponse);
+    rpc deleteProduct (deleteProductRequest) returns (deleteProductResponse);
+    rpc UpdateAdminProduct (UpdateAdminProductRequest) returns (UpdateAdminProductResponse);
+    rpc CheckBarcodeExistence (CheckBarcodeExistenceRequest) returns (CheckBarcodeExistenceResponse);
+    rpc AddBarcodeToRedis (Empty) returns (AddBarcodeToRedisResponse);
+    rpc GetProductByIDs (GetProductByIDsRequest) returns (GetProductByIDsResponse);
+    rpc GetProductsForProductGroup (GetProductsForProductGroupRequest) returns (GetProductsForProductGroupResponse);
+    rpc UpdateBrand (UpdateBrandRequest) returns (addBrandResponse);
+    rpc AddSupplier (AddSupplierRequest) returns (AddSupplierResponse);
+    rpc GetSupplierList (GetSupplierListRequest) returns (GetSupplierListResponse);
+    rpc UpdateSupplier (UpdateSupplierRequest) returns (AddSupplierResponse);
+    rpc ToggleIntervention (ToggleInterventionRequest) returns (DefaultResponse);
+    rpc ImportExcelData (ImportExcelDataRequest) returns (DefaultResponse);
+}

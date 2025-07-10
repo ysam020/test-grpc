@@ -1,0 +1,241 @@
+syntax = "proto3";
+package notification;
+
+import "../product/product.proto";
+message Empty {}
+
+message CreateAdminNotificationRequest {
+    string title = 1;
+    string description = 2;
+    string schedule_date = 3;
+    int32 schedule_hour = 4;
+    int32 schedule_minute = 5;
+    repeated string channels = 6;
+    TargetUsers target_users = 7;
+}
+
+message TargetUsers {
+  repeated string location = 1;
+  repeated string states = 2;
+  repeated string age = 3;
+  string gender = 4;
+  string has_children = 5;
+  string with_email_saved = 6;
+}
+
+message AdminNotification {
+    string admin_notification_id = 1;
+    string title = 2;
+    string description = 3;
+    string schedule_at = 4;
+    repeated string channels = 5;
+    TargetUsers target_users = 6;
+    string status = 7;
+    string createdAt = 8;
+    string updatedAt = 9;
+}
+
+message AdminNotificationResData {
+    string admin_notification_id = 1;
+    string title = 2;
+    string description = 3;
+    string schedule_at = 4;
+    repeated string channels = 5;
+    TargetUsers target_users = 6;
+    string status = 7;
+    string createdAt = 8;
+    string updatedAt = 9;
+    int32 no_of_users = 10;
+    int32 sent_count = 11;
+}
+
+message CreateAdminNotificationResponse {
+    string message = 1;
+    int32 status = 2;
+    AdminNotification data = 3;
+}
+
+message UpdateAdminNotificationRequest {
+    string admin_notification_id = 1;
+    string title = 2;
+    string description = 3;
+    string schedule_date = 4;
+    int32 schedule_hour = 5;
+    int32 schedule_minute = 6;
+    repeated string channels = 7;
+    TargetUsers target_users = 8;
+}
+
+message UpdateAdminNotificationResponse {
+    string message = 1;
+    int32 status = 2;
+    AdminNotification data = 3;
+}
+
+message GetAdminNotificationsRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string status = 3;
+    string start_date = 4;
+    string end_date = 5;
+}
+
+message GetAllAdminNotifications {
+    repeated AdminNotificationResData admin_notifications = 1;
+    int32 total_count = 2;
+}
+
+message GetAdminNotificationsResponse {
+    string message = 1;
+    int32 status = 2;
+    GetAllAdminNotifications data = 3;
+}
+
+message GetSingleAdminNotificationRequest {
+    string admin_notification_id = 1;
+}
+
+message GetSingleAdminNotificationResponse {
+    string message = 1;
+    int32 status = 2;
+    AdminNotification data = 3;
+}
+
+message DeleteAdminNotificationRequest {
+    string admin_notification_id = 1;
+}
+
+message DeleteAdminNotificationResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message PriceAlert {
+  string price_alert_id = 1;
+  string user_id = 2;
+  string product_id = 3;
+  double target_price = 4;
+  string createdAt = 5;
+  string updatedAt = 6;
+}
+
+message AddPriceAlertRequest {
+  string product_id = 1;
+  double target_price = 2;
+}
+
+message AddPriceAlertResponse {
+    string message = 1;
+    int32 status = 2;
+    PriceAlert data = 3;
+}
+
+message GetPriceAlertsRequest {
+    int32 page = 1;
+    int32 limit = 2;
+}
+
+message GetPriceAlertsResponse {
+    string message = 1;
+    int32 status = 2;
+    PriceAlertsData data = 3;
+}
+
+message PriceAlertsData {
+    repeated PriceAlertRes price_alerts = 1;
+    int32 total_count = 2;
+}
+
+message PriceAlertRes {
+    string price_alert_id = 1;
+    string user_id = 2;
+    ProductData product_detail = 3;
+    double target_price = 4;
+    string createdAt = 5;
+    string updatedAt = 6;
+}
+
+message ProductBestDeal {
+    string retailer_name = 1;
+    string retailer_price = 2;
+    string saving_percentage = 3;
+    string per_unit_price = 4;
+}
+
+message DeletePriceAlertRequest {
+  string product_id = 1;
+}
+
+message DeletePriceAlertResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message GetNotificationsRequest {
+    int32 page = 1;
+    int32 limit = 2;
+}
+
+message GetNotificationsResponse {
+    string message = 1;
+    int32 status = 2;
+    NotificationData data = 3;
+}
+
+message Notification {
+    string notification_id = 1;
+    string title = 2;
+    string description = 3;
+    string createdAt = 4;
+}
+
+message NotificationData {
+    repeated Notification notifications = 1;
+    int32 total_count = 2;
+}
+
+message CreateNotificationRequest {
+    string title = 1;
+    string description = 2;
+    string user_id = 3;
+    string type = 4;
+}
+
+message CreateNotificationResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message RetryAdminNotificationRequest {
+    string admin_notification_id = 1;
+}
+
+message RetryAdminNotificationResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message Count {
+    int32 count = 1;
+}
+
+message CountResponse {
+    string message = 1;
+    int32 status = 2;
+    Count data = 3;
+}
+
+service NotificationService {
+    rpc CreateAdminNotification(CreateAdminNotificationRequest) returns (CreateAdminNotificationResponse);
+    rpc UpdateAdminNotification (UpdateAdminNotificationRequest) returns (UpdateAdminNotificationResponse);
+    rpc GetAdminNotifications (GetAdminNotificationsRequest) returns (GetAdminNotificationsResponse);
+    rpc GetSingleAdminNotification (GetSingleAdminNotificationRequest) returns (GetSingleAdminNotificationResponse);
+    rpc DeleteAdminNotification (DeleteAdminNotificationRequest) returns (DeleteAdminNotificationResponse);
+    rpc AddPriceAlert (AddPriceAlertRequest) returns (AddPriceAlertResponse);
+    rpc GetPriceAlerts (GetPriceAlertsRequest) returns (GetPriceAlertsResponse);
+    rpc DeletePriceAlert (DeletePriceAlertRequest) returns (DeletePriceAlertResponse);
+    rpc GetNotifications (GetNotificationsRequest) returns (GetNotificationsResponse);
+    rpc CreateNotification (CreateNotificationRequest) returns (CreateNotificationResponse);
+    rpc RetryAdminNotification (RetryAdminNotificationRequest) returns (RetryAdminNotificationResponse);
+    rpc GetAverageNotificationCount (Empty) returns (CountResponse);
+}

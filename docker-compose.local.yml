@@ -1,0 +1,153 @@
+services:
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: ./docker/base.Dockerfile
+      no_cache: true
+      args:
+        - PROJECT=api-gateway-service
+        - PORT=50051
+    environment:
+      - AUTH_SERVICE_HOST=auth-management-service
+      - PRODUCT_SERVICE_HOST=product-management-service
+      - USER_SERVICE_HOST=user-management-service
+      - HEALTH_SERVICE_HOST=health-management-service
+      - WIDGET_SERVICE_HOST=widget-management-service
+      - SURVEY_SERVICE_HOST=survey-management-service
+      - NOTIFICATION_SERVICE_HOST=notification-management-service
+    ports:
+      - "50051:50051"
+    env_file: .env.local
+  
+  auth-management-service:
+    container_name: auth-management-service
+    build:
+      context: .
+      dockerfile: ./docker/base.Dockerfile
+      no_cache: true
+      args:
+        - PROJECT=auth-management-service
+        - PORT=50052
+    ports:
+      - "50052:50052"
+    env_file: .env.local
+
+  user-management-service:
+    container_name: user-management-service
+    build:
+      context: .
+      dockerfile: ./docker/base.Dockerfile
+      no_cache: true
+      args:
+        - PROJECT=user-management-service
+        - PORT=50053
+    ports:
+      - "50053:50053"
+    env_file: .env.local
+  
+  product-management-service:
+    container_name: product-management-service
+    build:
+      context: .
+      dockerfile: ./docker/base.Dockerfile
+      no_cache: true
+      args:
+        - PROJECT=product-management-service
+        - PORT=50054
+    ports:
+      - "50054:50054"
+    env_file: .env.local
+
+  sample-management-service:
+    container_name: sample-management-service
+    build:
+      context: .
+      dockerfile: ./docker/base.Dockerfile
+      no_cache: true
+      args:
+        - PROJECT=sample-management-service
+        - PORT=50059
+    ports:
+      - "50059:50059"
+    env_file: .env.local
+
+  health-management-service:
+    container_name: health-management-service
+    build:
+      context: .
+      dockerfile: ./docker/base.Dockerfile
+      no_cache: true
+      args:
+        - PROJECT=health-management-service
+        - PORT=50055
+    ports:
+      - "50055:50055"
+    env_file: .env.local
+
+  widget-management-service:
+    container_name: widget-management-service
+    build:
+      context: .
+      dockerfile: ./docker/base.Dockerfile
+      no_cache: true
+      args:
+        - PROJECT=widget-management-service
+        - PORT=50056
+    ports:
+      - "50056:50056"
+    env_file: .env.local
+
+  survey-management-service:
+    container_name: survey-management-service
+    build:
+      context: .
+      dockerfile: ./docker/base.Dockerfile
+      no_cache: true
+      args:
+        - PROJECT=survey-management-service
+        - PORT=50057
+    ports:
+      - "50057:50057"
+    env_file: .env.local
+
+  notification-management-service:
+    container_name: notification-management-service
+    build:
+      context: .
+      dockerfile: ./docker/base.Dockerfile
+      no_cache: true
+      args:
+        - PROJECT=notification-management-service
+        - PORT=50058
+    ports:
+      - "50058:50058"
+    env_file: .env.local
+
+  atcDb:  
+    container_name: atc-db
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: atc
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.14.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - network.host=0.0.0.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+
+volumes:
+  es-data:
+    driver: local

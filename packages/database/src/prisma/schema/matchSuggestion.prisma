@@ -1,0 +1,11 @@
+model matchSuggestion {
+    id                 String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    retailer_id    String   @db.Uuid
+    suggestion_details_id String   @db.Uuid
+    matched_product_pricing_id String   @db.Uuid
+    match_confidence Decimal  @default(0.0) @db.Decimal(10, 2)
+    date_matched DateTime @default(now())
+
+    Retailer      Retailer      @relation(fields: [retailer_id], references: [id])
+    suggestionDetails      suggestionDetails      @relation(fields: [suggestion_details_id], references: [id], onDelete: Cascade)
+}

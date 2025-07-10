@@ -1,0 +1,465 @@
+syntax = "proto3";
+package sample;
+
+import "../chart/chart.proto";
+import "../notification/notification.proto";
+
+// Create Sample
+message QuestionData {
+    string question = 1;
+    repeated string options = 2;
+    string answer_type = 3;
+}
+
+message CreateSampleRequest {
+    string client  = 1;
+    string product_id = 2;
+    bytes image = 3;
+    string description = 4;
+    string start_date = 5;
+    string end_date = 6;
+    int32 maximum_sample = 7;
+    string to_get_product = 8;
+    string task_to_do = 9;
+    string inquiries = 10;
+    repeated string location = 11;
+    repeated string age = 12;
+    repeated string state = 13;
+    string gender = 15;
+    string has_children = 16;
+    string with_email_saved = 17;
+    repeated QuestionData question_data = 18;
+    bool is_draft = 19;
+    string mime_type = 20;
+    int32 content_length = 21;
+    string id = 22;
+}
+
+message createSampleData {
+    string id = 1;
+}
+
+message CreateSampleResponse {
+    string message = 1;
+    int32 status = 2;
+    createSampleData data = 3;
+}
+
+// Draft Sample
+message DraftSampleRequest {
+    string client  = 1;
+    string product_id = 2;
+    bytes image = 3;
+    string description = 4;
+    string start_date = 5;
+    string end_date = 6;
+    int32 maximum_sample = 7;
+    string to_get_product = 8;
+    string task_to_do = 9;
+    string inquiries = 10;
+    repeated string location = 11;
+    repeated string age = 12;
+    repeated string state = 13;
+    string gender = 15;
+    string has_children = 16;
+    string with_email_saved = 17;
+    repeated QuestionData question_data = 18;
+    bool is_draft = 19;
+    string mime_type = 20;
+    int32 content_length = 21;
+    string id = 22;
+}
+
+message DraftresponseData {
+    string id = 1; 
+}
+
+message DraftSampleResponse {
+    string message = 1;
+    int32 status = 2;
+    DraftresponseData data = 3;
+}
+
+// Update Sample
+message UpdateSampleRequest {
+    string id = 1;
+    string client =2;
+    string description = 3;
+    string start_date = 4;
+    string end_date = 5;
+    int32 maximum_sample = 6;
+    string to_get_product = 7;
+    string task_to_do = 8;
+    string inquiries = 9;
+    repeated string location = 10;
+    repeated string age = 11;
+    repeated string state = 12;
+    string gender = 13;
+    string has_children = 14;
+    string with_email_saved = 15;
+    repeated QuestionData question_data = 16;
+    string product_id = 17;
+    bytes image = 18;
+    string mime_type = 19;
+    int32 content_length = 20;
+}
+
+message UpdateSampleResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+// Delete Sample
+message DeleteSampleRequest {
+    string id = 1;
+}
+
+message DeleteSampleResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+// Get Single Sample
+message GetSingleSampleRequest {
+    string id = 1;
+    bool is_widget_sample = 2;
+}
+
+message OptionAverageData {
+    string option_id = 1;
+    string option = 2;
+    int32 count = 3;
+    double average = 4;
+}
+
+message Question {
+    string question_id = 1;
+    string question = 2;
+    string answer_type = 3;
+    repeated OptionAverageData options = 4;
+    int32 total_answered = 5;
+    int32 total_duration = 6;
+    int32 days_since_start = 7;
+    int32 total_users = 8;
+}
+
+message AverageData {
+    int32 count = 1;
+    double average = 2;
+}
+
+message Product {
+    string product_id = 1;
+    string image = 2;
+    string name = 3;
+}
+
+message SampleData {
+    string id = 1;
+    string client = 2;
+    string description = 3;
+    string start_date = 4;
+    string end_date = 5;
+    string to_get_product = 6;
+    string task_to_do = 7;
+    string inquiries = 8;
+    repeated string location = 9;
+    repeated string age = 10;
+    string gender = 11;
+    repeated string state = 12;
+    string has_children = 13;
+    string with_email_saved = 14;
+    int32 maximum_sample = 15;
+    repeated Question questions = 16;
+    Product product_data = 17;
+    bool is_updatable = 18;
+    AverageData sample_completed = 19;
+    AverageData survey_completed = 20;
+    AverageData sample_sent = 21;
+}
+
+message GetSingleSampleResponse {
+    string message = 1;
+    int32 status = 2;
+    SampleData data = 3;
+}
+
+// Get All Sample
+message GetAllSampleRequest {
+    string type = 1;
+    string sample_status = 2;
+    string page = 3;
+    string limit = 4;
+    string start_date = 5;
+    string end_date = 6;
+    string keyword = 7;
+}
+
+message SamplesData {
+    string id = 1;
+    string client = 2;
+    bool is_active = 3;
+    bool is_completed = 4;
+    bool is_draft = 5;
+    int32 maximum_sample = 6;
+    string description = 7;
+    string product_name = 8;
+    AverageData sample_completed = 9;
+    AverageData survey_completed = 10;
+    AverageData sample_sent = 11;
+    string image = 12;
+    string end_date = 14;
+}
+
+message GetAllSamplesData {
+    repeated SamplesData samples = 1;
+    int32 total_count = 2;
+}
+
+message GetAllSampleResponse {
+    string message = 1;
+    int32 status = 2;
+    GetAllSamplesData data = 3;
+}
+
+// Toggle Sample
+message ToggleSampleRequest {
+    string id = 1;
+    string type = 2;
+}
+
+message ToggleSampleResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+// Submit Sample Asnwer
+message Answer {
+    string question_id = 1;
+    repeated string option = 2;
+}
+
+message SubmitSampleAnswerRequest {
+   repeated Answer answer_data = 1;
+   string id = 2;
+}
+
+message SubmitSampleAnswerResponse {
+    string message = 1;
+    int32 status = 2 ;
+}
+
+// Review Sample
+message ReviewSampleRequest {
+    string id = 1;
+    double rating = 2;
+    string comment = 3;
+    bytes image = 4;
+    string mime_type = 5;
+    int32 content_length = 6;
+}
+
+message ReviewSampleResponse {
+    string message = 1;
+    int32 status = 2 ;
+}
+
+//  Get All Reviews
+message GetAllReviewRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string type = 3;
+}
+
+message Sample {
+    string id = 1;
+    string image = 2;
+    string received_on = 3;
+    string name = 4;
+}
+
+message Review {
+  string id = 1;
+  double rating = 2;
+  string comment = 3;
+  string review_image = 4;
+  Sample sample_data = 5;
+}
+
+message ReviewResponse {
+  repeated Review reviews = 1;
+  int32 total_count = 2;
+}
+
+message GetAllReviewResponse {
+    string message = 1;
+    int32 status = 2;
+    ReviewResponse data = 3;
+}
+
+// Fetch sample for user
+message FetchSampleForUserRequest {
+    string id = 1;
+}
+
+message FetchResponseData {
+    string option_id = 1;
+    string text = 2;
+}
+
+message FetchResponse {
+    string question_id = 1;
+    repeated FetchResponseData responses = 2;
+}
+
+message OptionData {
+    string option_id = 1;
+    string option = 2;
+}
+
+message QuestionOption {
+    string id = 1;
+    string question = 2;
+    string answer_type = 3;
+    repeated OptionData options = 4;
+}
+
+message UserDetails {
+    string name = 1;
+    string address = 2;
+}
+
+message ProductWithURL {
+    string product_id = 1;
+    string image = 2;
+    string name = 3;
+    string product_url = 4;
+    string retailer_name = 5; 
+}
+
+message FetchSampleData {
+    string id = 1;
+    string end_date = 2;
+    string to_get_product = 3;
+    string task_to_do = 4;
+    string inquiries = 5;
+    string received_on = 6;
+    ProductWithURL product_data = 7;
+    UserDetails user_details = 8;
+    repeated QuestionOption question_data = 9;  
+    repeated FetchResponse response_data = 10;  
+}
+
+message FetchSampleForUserResponse {
+    string message = 1;
+    int32 status = 2;
+    FetchSampleData data = 3;  
+}
+
+// Fetch All Sample For User
+message FetchAllSamplesForUserRequest {
+    int32 page = 1;
+    int32 limit = 2;
+}
+
+message FetchAllSamples {
+    string id = 1;
+    string received_on = 2;
+    Product product_data = 3;
+}
+
+message FetchAllSamplesData {
+   repeated FetchAllSamples samples = 1;
+   int32 total_count = 2;
+}
+
+message FetchAllSamplesForUserResponse {
+    string message = 1;
+    int32 status = 2;
+    FetchAllSamplesData data = 3;
+}
+
+// Get All Requested Sample By UserID
+message GetAllRequestedSampleRequest {
+  string id = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message AllRequestedSamples {
+    string id = 1;
+    string image = 2;
+    string name = 3;
+    string description = 4;
+    string availed_date = 5;
+}
+
+message GetAllRequestedSampleData {
+    repeated AllRequestedSamples requested_samples = 1;
+    int32 total_count = 2;
+}
+
+message GetAllRequestedSampleResponse {
+    string message = 1;
+    int32 status = 2;
+    GetAllRequestedSampleData data = 3;
+}
+
+message GetSampleEngagementRequest {
+    string type = 1;
+}
+
+message GetSampleEngagementResponse {
+    repeated ChartData data = 1;
+    int32 status = 2;
+    string message = 3;
+}
+
+message GetSampleStatusRequest {
+    repeated string sample_ids = 1;
+}
+
+message SampleStatusData {
+    string sample_id = 1;
+    string status = 2;
+}
+
+message GetSampleStatusResponse {
+    string message = 1;
+    int32 status = 2;
+    repeated SampleStatusData data = 3;
+}
+
+// Export To Excel
+message ExportToExcelRequest {
+    string type = 1;
+    string id = 2;
+    string start_date = 3;
+    string end_date = 4;
+    string email = 5;
+}
+
+message ExportToExcelResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+service SampleService {
+    rpc CreateSample (CreateSampleRequest) returns (CreateSampleResponse);
+    rpc DraftSample (DraftSampleRequest) returns (DraftSampleResponse);
+    rpc UpdateSample (UpdateSampleRequest) returns (UpdateSampleResponse);
+    rpc DeleteSample (DeleteSampleRequest) returns (DeleteSampleResponse);
+    rpc GetSingleSample (GetSingleSampleRequest) returns (GetSingleSampleResponse);
+    rpc GetAllSample (GetAllSampleRequest) returns (GetAllSampleResponse);
+    rpc ToggleSample (ToggleSampleRequest) returns (ToggleSampleResponse);
+    rpc SubmitSampleAnswer (SubmitSampleAnswerRequest) returns (SubmitSampleAnswerResponse);
+    rpc ReviewSample (ReviewSampleRequest) returns (ReviewSampleResponse);
+    rpc GetAllReview (GetAllReviewRequest) returns (GetAllReviewResponse);
+    rpc FetchSampleForUser (FetchSampleForUserRequest) returns (FetchSampleForUserResponse);
+    rpc FetchAllSampleForUser (FetchAllSamplesForUserRequest) returns (FetchAllSamplesForUserResponse);
+    rpc GetAllRequestedSamples (GetAllRequestedSampleRequest) returns (GetAllRequestedSampleResponse);
+    rpc GetSampleEngagement (GetSampleEngagementRequest) returns (GetSampleEngagementResponse);
+    rpc GetSamplesCount (notification.Empty) returns (notification.CountResponse);
+    rpc GetSampleStatus (GetSampleStatusRequest) returns (GetSampleStatusResponse);
+    rpc ExportToExcel (ExportToExcelRequest) returns (ExportToExcelResponse);
+}

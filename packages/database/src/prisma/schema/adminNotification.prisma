@@ -1,0 +1,17 @@
+model AdminNotification {
+    id           String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    title        String
+    description  String
+    status       AdminNotificationStatus @default(PENDING)
+    scheduled_at DateTime
+    channels     Json[]
+    target_users Json?
+    createdAt    DateTime                @default(now())
+    updatedAt    DateTime                @updatedAt
+}
+
+enum AdminNotificationStatus {
+    PENDING
+    SENT
+    FAILED
+}

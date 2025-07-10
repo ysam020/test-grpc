@@ -1,0 +1,8 @@
+diff --git a/umd/index.d.ts b/umd/index.d.ts
+index c623535ccdd8ae7fe81ab7a4fad6b672f2eb56a8..71f8360b6884d5806c18c8c1995d187ee5356e1e 100644
+--- a/umd/index.d.ts
++++ b/umd/index.d.ts
+@@ -1,2 +1,3 @@
++// @ts-expect-error this fixes the error
+ import Long from "../index.js";
+ export = Long;

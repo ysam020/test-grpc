@@ -1,0 +1,14 @@
+model AdSuggestedProduct {
+    id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    product_id  String   @db.Uuid
+    ad_item_id  String   @db.Uuid
+    match_score Decimal  @default(0.0) @db.Decimal(10, 2)
+    is_matched  Boolean  @default(false)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    MasterProduct     MasterProduct     @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    AdvertisementItem AdvertisementItem @relation(fields: [ad_item_id], references: [id], onDelete: Cascade)
+
+    @@unique([product_id, ad_item_id], name: "unique_product_ad_item")
+}

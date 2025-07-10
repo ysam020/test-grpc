@@ -1,0 +1,14 @@
+model AdSuggestedBrand {
+    id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    brand_id    String   @db.Uuid
+    ad_item_id  String   @db.Uuid
+    match_score Decimal  @default(0.0) @db.Decimal(10, 2)
+    is_matched  Boolean  @default(false)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    Brand             Brand             @relation(fields: [brand_id], references: [id], onDelete: Cascade)
+    AdvertisementItem AdvertisementItem @relation(fields: [ad_item_id], references: [id], onDelete: Cascade)
+
+    @@unique([brand_id, ad_item_id], name: "unique_brand_ad_item")
+}

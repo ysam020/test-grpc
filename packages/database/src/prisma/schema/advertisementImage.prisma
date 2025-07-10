@@ -1,0 +1,11 @@
+model AdvertisementImage {
+    id               String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    advertisement_id String   @db.Uuid
+    page_number      Int
+    ai_data          Json?
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+
+    Advertisement     Advertisement       @relation(fields: [advertisement_id], references: [id], onDelete: Cascade)
+    AdvertisementItem AdvertisementItem[]
+}

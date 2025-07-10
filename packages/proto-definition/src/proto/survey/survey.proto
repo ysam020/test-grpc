@@ -1,0 +1,295 @@
+syntax = "proto3";
+package survey;
+
+import "../chart/chart.proto";
+import "../notification/notification.proto";
+
+message CreateSurveyRequest {
+    string name = 1;
+    string client = 2;
+    string startDate = 3;
+    string endDate = 4;  
+    string question = 5;
+    repeated string option = 6;
+    int32 targetAudience = 7;
+    repeated string location = 8;
+    repeated string state = 9;
+    repeated string age = 10;
+    string gender = 11;
+    string hasChildren = 12;
+    string withEmailSaved = 13;
+    bool is_draft = 14;
+    bool multiSelect = 15;
+    string id = 16;
+}
+
+message CreateSurveyResponse {
+  string message = 1;
+   int32 status = 2;
+}
+
+message GetSingleSurveyRequest {
+  string id = 1;
+  bool is_widget_survey = 2;
+}
+
+message Question {
+  string id = 1;
+  string question = 2;
+  bool multiSelect = 3;
+}
+
+message Option {
+  string id = 1;
+  string option = 2;
+}
+
+message OptionData {
+  string id = 1;
+  string option = 2;
+  int32 count = 3;
+  int32 average = 4;
+
+}
+
+message responseData {
+  string id = 1;
+}
+
+message GetSingleSurveyData {
+  string id = 1;
+  string name = 2;
+  bool is_updatable = 3;
+  Question question = 4; 
+  repeated OptionData option = 5;
+  string startDate = 6;
+  string endDate = 7;
+  repeated string location = 8;
+  repeated string state = 9;
+  repeated string age = 10;
+  string gender = 11;
+  string hasChildren = 12;
+  string withEmailSaved = 13;
+  int32 targetAudience = 14;
+  string client = 15;
+  bool is_draft = 16;
+  int32 totalAnswered = 17;
+  repeated responseData responses = 18;
+  int32 daysSinceStart = 19;
+  int32 totalDuration = 20;
+}
+
+message GetSingleSurveyResponse {
+  string message = 1;
+  int32 status = 2;
+  GetSingleSurveyData data = 3;
+}
+
+message GetAllSurveyRequest {
+  string type = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  string survey_status = 4;
+  string keyword = 5;
+}
+
+message SurveyWithData {
+  string id = 1;
+  string client = 2;
+  string name = 3;
+  Question question = 4;
+  bool is_active = 5;
+  bool is_completed = 6;
+  repeated OptionData option = 7;
+  int32 totalAnswered = 8;
+  int32 totalDuration = 9;
+  int32 daysSinceStart = 10;
+  int32 totalUsers = 11;
+  int32 targetAudience = 12;
+  string start_date = 13;
+  string end_date = 14;
+}
+
+message GetAllSurveyData {
+ repeated SurveyWithData survey = 1;
+  int32 totalCount = 2;
+}
+
+message GetAllSurveyResponse {
+  string message = 1;
+  int32 status = 2;
+  GetAllSurveyData data = 3;
+}
+
+message UpdateSurveyRequest {
+  string id = 1;
+  string name = 2;
+  string client = 3;
+  string startDate = 4;
+  string endDate = 5;
+  string question = 6;
+  repeated string option = 7;
+  int32 targetAudience = 8;
+  repeated string location = 9;
+  repeated string state = 10;
+  repeated string age = 11;
+  string gender = 12;
+  string hasChildren = 13;
+  string withEmailSaved = 14;
+  bool is_draft = 15;
+  bool multiSelect = 16;
+}
+
+message UpdateSurveyResponse {
+  string message = 1;
+  int32 status = 2;
+}
+
+message DeleteSurveyRequest  {
+  string id = 1;
+}
+
+message DeleteSurveyResponse {
+  string message = 1;
+  int32 status = 2;
+}
+
+message ToggleSurveyRequest {
+  string type = 1;
+  string id = 2;
+  repeated string survey_ids = 3;
+}
+
+message ToggleSurveyResponse {
+  string message = 1;
+  int32 status = 2;
+}
+
+message SubmitSurveyAnswerRequest {
+  string id = 1;
+  repeated string option = 2;
+}
+
+message OptionDataWithCount {
+  string id = 1;
+  string option = 2;
+  int32 count = 3;
+  bool user_selected = 4;
+}
+
+message SubmittedAnsweredData {
+  repeated OptionDataWithCount option_data = 1;
+  int32 total_answered = 2;
+}
+
+message SubmitSurveyAnswerResponse {
+  string message = 1;
+  int32 status = 2;
+  SubmittedAnsweredData data = 3;
+}
+
+message DraftSurveyRequest {
+    string name = 1;
+    string client = 2;
+    string startDate = 3;
+    string endDate = 4;  
+    string question = 5;
+    repeated string option = 6;
+    int32 targetAudience = 7;
+    repeated string location = 8;
+    repeated string state = 9;
+    repeated string age = 10;
+    string gender = 11;
+    string hasChildren = 12;
+    string withEmailSaved = 13;
+    bool is_draft = 14;
+    bool multiSelect = 15;
+    string id = 16;
+}
+
+message DraftSurveyResponse {
+  string message = 1;
+   int32 status = 2;
+}
+
+message DeactivateSurveyRequest {
+  string id = 1;
+}
+
+// Get All Responses By UserID
+message GetAllResponsesByUserIDRequest {
+  string id = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message AllResponses {
+  string name = 1;
+  string question = 2;
+  string response_date = 3;
+  string response = 4; 
+  string id = 5;
+}
+
+message GetAllResponsesByUserIDData {
+  repeated AllResponses response_data = 1;
+  int32 total_count = 2;
+}
+
+message GetAllResponsesByUserIDResponse {
+  string message = 1;
+  int32 status = 2;
+  GetAllResponsesByUserIDData data = 3;
+}
+
+message DidUserAnsweredRequest {
+  repeated string survey_ids = 1;
+}
+
+message DidUserAnsweredData {
+  string survey_id = 1;
+  bool did_user_answered = 2;
+}
+
+message DidUserAnsweredResponse {
+  int32 status = 1;
+  string message = 2;
+  repeated DidUserAnsweredData data = 3;
+}
+
+message GetSurveyEngagementRequest {
+    string type = 1;
+}
+
+message GetSurveyEngagementResponse {
+    repeated ChartData data = 1;
+    int32 status = 2;
+    string message = 3;
+}
+
+message ExportToExcelSurveyRequest {
+  string id = 1;
+  string email = 2;
+}
+
+message ExportToExcelSurveyResponse {
+  string message = 1;
+  int32 status = 2;
+}
+
+service SurveyService {
+    rpc CreateSurvey (CreateSurveyRequest) returns (CreateSurveyResponse);
+    rpc GetSingleSurvey(GetSingleSurveyRequest) returns (GetSingleSurveyResponse);
+    rpc GetAllSurvey(GetAllSurveyRequest) returns (GetAllSurveyResponse);
+    rpc UpdateSurvey(UpdateSurveyRequest) returns (UpdateSurveyResponse);
+    rpc DeleteSurvey(DeleteSurveyRequest) returns (DeleteSurveyResponse);
+    rpc ToggleSurvey(ToggleSurveyRequest) returns (ToggleSurveyResponse);
+    rpc DeactivateSurvey (DeactivateSurveyRequest) returns (ToggleSurveyResponse);
+    rpc SubmitSurveyAnswer(SubmitSurveyAnswerRequest) returns (SubmitSurveyAnswerResponse);
+    rpc DraftSurvey(DraftSurveyRequest) returns (DraftSurveyResponse);
+    rpc GetAllResponsesByUserID(GetAllResponsesByUserIDRequest) returns (GetAllResponsesByUserIDResponse);
+    rpc DidUserAnswered(DidUserAnsweredRequest) returns (DidUserAnsweredResponse);
+    rpc GetSurveyEngagement (GetSurveyEngagementRequest) returns (GetSurveyEngagementResponse);
+    rpc ExportToExcel (ExportToExcelSurveyRequest) returns (ExportToExcelSurveyResponse);
+    rpc GetSurveysCount (notification.Empty) returns (notification.CountResponse);
+}

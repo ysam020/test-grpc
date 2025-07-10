@@ -1,0 +1,22 @@
+model AdvertisementItem {
+    id                 String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    ad_image_id        String   @db.Uuid
+    advertisement_text String
+    retail_price       Decimal  @default(0.0) @db.Decimal(10, 2)
+    promotional_price  Decimal  @default(0.0) @db.Decimal(10, 2)
+    is_matched         Boolean  @default(false)
+    product_id         String?  @db.Uuid
+    product_group_id   String?  @db.Uuid
+    brand_id           String?  @db.Uuid
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+
+    AdvertisementImage AdvertisementImage @relation(fields: [ad_image_id], references: [id], onDelete: Cascade)
+    MasterProduct      MasterProduct?     @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    ProductGroup       ProductGroup?      @relation(fields: [product_group_id], references: [id], onDelete: Cascade)
+    Brand              Brand?             @relation(fields: [brand_id], references: [id], onDelete: Cascade)
+
+    AdSuggestedGroup   AdSuggestedGroup[]
+    AdSuggestedProduct AdSuggestedProduct[]
+    AdSuggestedBrand   AdSuggestedBrand[]
+}

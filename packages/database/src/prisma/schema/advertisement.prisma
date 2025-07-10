@@ -1,0 +1,33 @@
+model Advertisement {
+    id                   String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    title                String
+    keyword              String?             @db.VarChar(50)
+    retailer_id          String              @db.Uuid
+    advertisement_type   AdvertisementType
+    start_date           DateTime
+    end_date             DateTime
+    advertisement_status AdvertisementStatus @default(IN_PROGRESS)
+    total_pages          Int?
+    match_percentage     Int                 @default(0)
+    createdAt            DateTime            @default(now())
+    updatedAt            DateTime            @updatedAt
+
+    Retailer Retailer @relation(fields: [retailer_id], references: [id], onDelete: Cascade)
+
+    AdvertisementImage AdvertisementImage[]
+}
+
+enum AdvertisementType {
+    STANDARD
+    SEASONAL
+    CATEGORY_EVENT
+    SOCIAL_MEDIA
+    PRINT
+    EMAIL
+}
+
+enum AdvertisementStatus {
+    IN_PROGRESS
+    NEEDS_REVIEW
+    COMPLETED
+}

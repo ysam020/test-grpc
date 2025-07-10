@@ -1,0 +1,14 @@
+model SampleResponse {
+    id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    question_id String   @db.Uuid
+    user_id     String   @db.Uuid
+    option_id   String?  @db.Uuid
+    text        String?
+    email       String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    user     User           @relation(fields: [user_id], references: [id])
+    option   SampleOption?  @relation(fields: [option_id], references: [id])
+    question SampleQuestion @relation(fields: [question_id], references: [id])
+}

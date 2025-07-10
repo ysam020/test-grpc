@@ -1,0 +1,33 @@
+{
+  "name": "@atc/db",
+  "version": "0.0.0",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "prisma": {
+    "schema": "src/prisma"
+  },
+  "scripts": {
+    "db:generate": "dotenv -e ../../.env -c -- prisma generate",
+    "db:migrate": "dotenv -e ../../.env -c -- prisma migrate",
+    "db:push": "dotenv -e ../../.env -c -- prisma db push",
+    "db:studio": "dotenv -e ../../.env -c -- prisma studio",
+    "db:seed": "dotenv -e ../../.env -c -- tsx src/seed.ts",
+    "format": "prisma format",
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@prisma/client": "5.21.1",
+    "pg": "^8.13.1",
+    "prisma": "^5.21.1"
+  },
+  "devDependencies": {
+    "@atc/logger": "workspace:*",
+    "@types/node": "^22.8.7",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2"
+  }
+}

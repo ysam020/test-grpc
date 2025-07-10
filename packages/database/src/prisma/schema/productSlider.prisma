@@ -1,0 +1,20 @@
+model ProductSlider {
+    id                String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    createdAt         DateTime           @default(now())
+    updatedAt         DateTime           @updatedAt
+    promotion_type    PromotionTypeEnum?
+    brands            Brand[]
+    retailers         Retailer[]
+    categories        Category[]
+    module_name       String
+    number_of_product Int
+    sort_by_field     String
+    sort_by_order     String
+    background_color  String?
+    brand_logo        String?
+}
+
+enum PromotionTypeEnum {
+    BRAND
+    RETAILER
+}

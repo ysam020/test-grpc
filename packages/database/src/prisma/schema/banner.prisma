@@ -1,0 +1,27 @@
+model Banner {
+    id                 String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    banner_name        String
+    link_type          BannerLinkType
+    link               String?
+    image              String?
+    createdAt          DateTime           @default(now())
+    updatedAt          DateTime           @updatedAt
+    internal_link_type InternalLinkType?
+    sample_id          String?            @db.Uuid
+    promotion_type     PromotionTypeEnum?
+    brands             Brand[]
+    retailers          Retailer[]
+    categories         Category[]
+
+    Sample Sample? @relation(fields: [sample_id], references: [id])
+}
+
+enum BannerLinkType {
+    INTERNAL
+    EXTERNAL
+}
+
+enum InternalLinkType {
+    PRODUCT
+    SAMPLE
+}

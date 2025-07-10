@@ -1,0 +1,11 @@
+model SurveyQuestion {
+    id          String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    survey_id   String           @unique @db.Uuid
+    survey      Survey           @relation(fields: [survey_id], references: [id])
+    question    String
+    multiSelect Boolean
+    createdAt   DateTime         @default(now())
+    updatedAt   DateTime         @updatedAt
+    options     SurveyOption[]
+    responses   SurveyResponse[]
+}

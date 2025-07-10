@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package health;
+
+
+// Health check request message
+message HealthCheckRequest {}
+
+message ServiceStatus {
+    string service_name = 1;
+    enum ServingStatus {
+        SERVING = 1;
+        NOT_SERVING = 2;
+        UNKNOWN = 3;
+    }
+    ServingStatus status = 2;
+}
+
+// Health check response message
+message HealthCheckResponse {
+    repeated ServiceStatus services = 1;
+}
+
+// The Health service definition
+service HealthService {
+    rpc healthCheck (HealthCheckRequest) returns (HealthCheckResponse);
+}

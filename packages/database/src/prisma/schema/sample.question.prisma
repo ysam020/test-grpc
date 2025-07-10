@@ -1,0 +1,12 @@
+model SampleQuestion {
+    id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    sample_id   String   @db.Uuid
+    question    String
+    answer_type String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    options   SampleOption[]
+    responses SampleResponse[]
+    sample    Sample           @relation(fields: [sample_id], references: [id])
+}

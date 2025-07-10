@@ -1,0 +1,60 @@
+{
+    "name": "add-to-cart-backend",
+    "private": true,
+    "scripts": {
+        "build": "turbo build",
+        "start:dev": "turbo start:dev --concurrency=11",
+        "start:prod": "turbo start:prod",
+        "lint": "turbo lint",
+        "proto:gen": "turbo proto:gen",
+        "db:generate": "turbo db:generate",
+        "db:push": "turbo db:push",
+        "db:migrate": "turbo db:migrate -- dev",
+        "db:studio": "turbo db:studio",
+        "db:all": "turbo db:generate && turbo db:migrate -- dev --name initial && turbo db:push",
+        "db:seed": "turbo db:seed",
+        "docker:dev:up": "docker compose -f docker-compose.dev.yml up --build -V",
+        "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d",
+        "docker:local:up": "docker compose -f docker-compose.local.yml up -d -V",
+        "docker:local:down": "docker compose -f docker-compose.local.yml down",
+        "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
+        "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
+        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "lint:commit": "commitlint --edit",
+        "lint:branch": "node ./scripts/check-branch.js",
+        "setup:project": "turbo proto:gen && turbo db:generate && turbo build",
+        "prepare": "husky"
+    },
+    "devDependencies": {
+        "@atc/typescript-config": "workspace:*",
+        "@commitlint/cli": "^19.6.0",
+        "@commitlint/config-conventional": "^19.6.0",
+        "@types/express": "^5.0.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^15.2.10",
+        "prettier": "^3.2.5",
+        "turbo": "^2.2.3",
+        "typescript": "5.5.4"
+    },
+    "packageManager": "pnpm@8.15.6",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "dependencies": {
+        "@atc/logger": "workspace:*",
+        "@aws-sdk/client-s3": "^3.705.0",
+        "@grpc/grpc-js": "^1.12.3",
+        "@grpc/proto-loader": "^0.7.13",
+        "@types/node": "^22.8.7",
+        "dotenv": "^16.4.5",
+        "dotenv-cli": "^7.4.2",
+        "express": "^4.21.1",
+        "winston": "^3.16.0",
+        "zod": "^3.23.8",
+        "zod-validation-error": "^3.4.0"
+    }
+}

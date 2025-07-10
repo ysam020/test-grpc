@@ -1,0 +1,17 @@
+model Brand {
+    id            String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    brand_name    String
+    private_label Boolean @default(false)
+    supplier_id   String? @db.Uuid
+
+    ProductSlider     ProductSlider[]
+    MasterProduct     MasterProduct[]
+    Banner            Banner[]
+    ProductGroup      ProductGroup[]
+    AdvertisementItem AdvertisementItem[]
+    AdSuggestedBrand  AdSuggestedBrand[]
+
+    Supplier Supplier? @relation(fields: [supplier_id], references: [id], onDelete: SetNull)
+
+    @@unique([brand_name], name: "brandmatched_unique")
+}

@@ -1,0 +1,75 @@
+services:
+    api-gateway:
+        container_name: api-gateway
+        image: 061039808638.dkr.ecr.ap-south-1.amazonaws.com/dev/api-gateway:${TAG_NAME}
+        environment:
+            - AUTH_SERVICE_HOST=auth-management-service
+            - PRODUCT_SERVICE_HOST=product-management-service
+            - USER_SERVICE_HOST=user-management-service
+            - WIDGET_SERVICE_HOST=widget-management-service
+            - SURVEY_SERVICE_HOST=survey-management-service
+            - NOTIFICATION_SERVICE_HOST=notification-management-service
+            - SAMPLE_SERVICE_HOST=sample-management-service
+            - CATALOGUE_SERVICE_HOST=catalogue-management-service
+        ports:
+            - '50051:50051'
+        env_file: .env
+
+    auth-management-service:
+        container_name: auth-management-service
+        image: 061039808638.dkr.ecr.ap-south-1.amazonaws.com/dev/auth-management-service:${TAG_NAME}
+        environment:
+            - USER_SERVICE_HOST=user-management-service
+            - NOTIFICATION_SERVICE_HOST=notification-management-service
+        env_file: .env
+
+    user-management-service:
+        container_name: user-management-service
+        image: 061039808638.dkr.ecr.ap-south-1.amazonaws.com/dev/user-management-service:${TAG_NAME}
+        env_file: .env
+
+    product-management-service:
+        container_name: product-management-service
+        image: 061039808638.dkr.ecr.ap-south-1.amazonaws.com/dev/product-management-service:${TAG_NAME}
+        environment:
+            - CATALOGUE_SERVICE_HOST=catalogue-management-service
+        env_file: .env
+
+    widget-management-service:
+        container_name: widget-management-service
+        image: 061039808638.dkr.ecr.ap-south-1.amazonaws.com/dev/widget-management-service:${TAG_NAME}
+        environment:
+            - SURVEY_SERVICE_HOST=survey-management-service
+            - SAMPLE_SERVICE_HOST=sample-management-service
+        env_file: .env
+
+    survey-management-service:
+        container_name: survey-management-service
+        image: 061039808638.dkr.ecr.ap-south-1.amazonaws.com/dev/survey-management-service:${TAG_NAME}
+        environment:
+            - USER_SERVICE_HOST=user-management-service
+            - WIDGET_SERVICE_HOST=widget-management-service
+        env_file: .env
+
+    notification-management-service:
+        container_name: notification-management-service
+        image: 061039808638.dkr.ecr.ap-south-1.amazonaws.com/dev/notification-management-service:${TAG_NAME}
+        environment:
+            - USER_SERVICE_HOST=user-management-service
+        env_file: .env
+
+    sample-management-service:
+        container_name: sample-management-service
+        image: 061039808638.dkr.ecr.ap-south-1.amazonaws.com/dev/sample-management-service:${TAG_NAME}
+        environment:
+            - USER_SERVICE_HOST=user-management-service
+            - PRODUCT_SERVICE_HOST=product-management-service
+            - WIDGET_SERVICE_HOST=widget-management-service
+        env_file: .env
+
+    catalogue-management-service:
+        container_name: catalogue-management-service
+        image: 061039808638.dkr.ecr.ap-south-1.amazonaws.com/dev/catalogue-management-service:${TAG_NAME}
+        environment:
+            - PRODUCT_SERVICE_HOST=product-management-service
+        env_file: .env

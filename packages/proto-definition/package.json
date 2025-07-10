@@ -1,0 +1,31 @@
+{
+  "name": "@atc/proto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "exports": {
+    "./proto/*": {
+      "types": "./src/proto/*",
+      "default": "./dist/proto/*"
+    },
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "proto:gen": "node ./proto-dev-gen.js",
+    "build": "tsc -b && mkdir -p ./dist/proto && cp -r ./src/proto/* ./dist/proto/"
+  },
+  "devDependencies": {
+    "typescript": "5.5.4"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.2",
+    "@atc/typescript-config": "workspace:*",
+    "@grpc/proto-loader": "^0.7.13"
+  }
+}

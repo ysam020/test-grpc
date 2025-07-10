@@ -1,0 +1,57 @@
+import {
+    constants,
+    deleteS3Folder,
+    deleteS3Object,
+    errorMessage,
+    responseMessage,
+    utilFns,
+} from '@atc/common';
+import { CustomServerUnaryCall } from '@atc/grpc-server';
+import { logger } from '@atc/logger';
+import {
+    DefaultResponse,
+    DefaultResponse__Output,
+    DeleteAdvertisementRequest__Output,
+} from '@atc/proto';
+import { sendUnaryData, status } from '@grpc/grpc-js';
+import {
+    deleteAdvertisementByID,
+    getAdvertisementByID,
+} from '../services/model.service';
+
+export const deleteAdvertisement = async (
+    call: CustomServerUnaryCall<
+        DeleteAdvertisementRequest__Output,
+        DefaultResponse
+    >,
+    callback: sendUnaryData<DefaultResponse__Output>,
+) => {
+    try {
+        const { advertisement_id } = utilFns.removeEmptyFields(call.request);
+
+        const { advertisement } = await getAdvertisementByID(advertisement_id);
+        if (!advertisement) {
+            return callback(null, {
+                message: errorMessage.ADVERTISEMENT.NOT_FOUND,
+                status: status.NOT_FOUND,
+            });
+        }
+
+        await deleteAdvertisementByID(advertisement_id);
+
+        await deleteS3Folder(
+            `${constants.ADVERTISEMENT_IMAGE_FOLDER}/${advertisement.id}`,
+        );
+
+        return callback(null, {
+            message: responseMessage.ADVERTISEMENT.DELETED,
+            status: status.OK,
+        });
+    } catch (error) {
+        logger.error(error);
+        return callback(null, {
+            message: errorMessage.OTHER.SOMETHING_WENT_WRONG,
+            status: status.INTERNAL,
+        });
+    }
+};
