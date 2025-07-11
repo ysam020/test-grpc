@@ -19,7 +19,7 @@
         "docker:local:down": "docker compose -f docker-compose.local.yml down",
         "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
         "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
-        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "format": "prettier --write .",
         "lint:commit": "commitlint --edit",
         "lint:branch": "node ./scripts/check-branch.js",
         "setup:project": "turbo proto:gen && turbo db:generate && turbo build",

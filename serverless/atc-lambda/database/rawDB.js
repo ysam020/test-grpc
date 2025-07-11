@@ -9,7 +9,7 @@ exports.getRawDBConnection = async () => {
             ssl: {
                 require: true,
                 rejectUnauthorized: false,
-            }
+            },
         });
         pool.on('error', (err) => {
             console.error('Raw DB connection error', err);

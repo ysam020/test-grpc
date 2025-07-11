@@ -1,5 +1,3 @@
-// apps/api-gateway-service/__tests__/api/product.test.ts
-import request from 'supertest';
 import { Server } from 'http';
 import { Express } from 'express';
 

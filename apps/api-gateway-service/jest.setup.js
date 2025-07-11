@@ -1,4 +1,3 @@
-// apps/api-gateway-service/jest.setup.js
 // Test environment setup for API Gateway
 process.env.NODE_ENV = 'test';
 process.env.PORT = '3001';

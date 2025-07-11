@@ -48,7 +48,7 @@ async function generateProtos() {
 
         // Generate types for this proto file
         const command = `npx proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --keepCase --grpcLib=@grpc/grpc-js --outDir=${outputDir} --proto_path=${baseProtoDir} ${protoFile}`;
-        
+
         try {
             console.log(`Generating types for ${relativePath}...`);
             await execAsync(command);

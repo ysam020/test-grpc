@@ -119,7 +119,7 @@ export class ProductServer extends BaseGrpcServer {
 
         this.addMiddleware(roleMiddleware(roleRequirements));
 
-        this.addService(
+        (this.addService(
             serviceDefinitions.productPackageDefinition.product.ProductService
                 .service,
             {
@@ -260,7 +260,7 @@ export class ProductServer extends BaseGrpcServer {
                 {
                     healthCheck,
                 },
-            );
+            ));
     }
 
     private healthCheckHandler = (

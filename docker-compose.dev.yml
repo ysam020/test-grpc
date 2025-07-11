@@ -118,8 +118,8 @@ services:
             dockerfile: ./docker/base.Dockerfile
             no_cache: true
             args:
-            - PROJECT=sample-management-service
-            - PORT=50059
+                - PROJECT=sample-management-service
+                - PORT=50059
         ports:
             - '50059:50059'
         env_file: .env
