@@ -28,11 +28,15 @@ module.exports = {
             {
                 tsconfig: {
                     isolatedModules: true,
+                    module: 'CommonJS',
+                    target: 'ES2020',
                 },
+                useESM: false,
             },
         ],
     },
     testTimeout: 30000,
     clearMocks: true,
     restoreMocks: true,
+    transformIgnorePatterns: ['node_modules/(?!(.*\\.mjs$))'],
 };
