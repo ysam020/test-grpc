@@ -1,0 +1,35 @@
+{
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "projects": [
+        "<rootDir>/apps/api-gateway-service/jest.config.js",
+        "<rootDir>/apps/auth-management-service/jest.config.js",
+        "<rootDir>/apps/user-management-service/jest.config.js",
+        "<rootDir>/apps/product-management-service/jest.config.js",
+        "<rootDir>/apps/widget-management-service/jest.config.js",
+        "<rootDir>/apps/survey-management-service/jest.config.js",
+        "<rootDir>/apps/notification-management-service/jest.config.js",
+        "<rootDir>/apps/sample-management-service/jest.config.js",
+        "<rootDir>/apps/catalogue-management-service/jest.config.js"
+    ],
+    "collectCoverageFrom": [
+        "apps/**/src/**/*.{ts,js}",
+        "packages/**/src/**/*.{ts,js}",
+        "!**/*.d.ts",
+        "!**/node_modules/**",
+        "!**/dist/**",
+        "!**/build/**"
+    ],
+    "coverageDirectory": "<rootDir>/coverage",
+    "coverageReporters": ["text", "lcov", "html"],
+    "testMatch": [
+        "<rootDir>/apps/**/__tests__/**/*.test.{ts,js}",
+        "<rootDir>/packages/**/__tests__/**/*.test.{ts,js}"
+    ],
+    "moduleNameMapper": {
+        "^@atc/(.*)$": "<rootDir>/packages/$1/src",
+        "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
+    "testTimeout": 30000
+}
