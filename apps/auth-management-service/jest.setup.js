@@ -1,4 +1,3 @@
-// apps/auth-management-service/jest.setup.js
 // Test environment setup for gRPC service
 process.env.NODE_ENV = 'test';
 process.env.GRPC_PORT = '50052';
@@ -16,7 +15,6 @@ global.mockDatabase = {
         update: jest.fn(),
         delete: jest.fn(),
     },
-    // Add other model mocks as needed
 };
 
 // Mock external services

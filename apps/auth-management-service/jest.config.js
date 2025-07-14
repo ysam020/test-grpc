@@ -1,6 +1,5 @@
-// apps/auth-management-service/jest.config.js
 module.exports = {
-    displayName: 'Auth Management Service (gRPC)',
+    displayName: 'Auth Management Service',
     preset: 'ts-jest',
     testEnvironment: 'node',
     rootDir: '.',
@@ -14,7 +13,6 @@ module.exports = {
         '!src/**/index.ts',
         '!src/**/*.interface.ts',
         '!src/**/*.type.ts',
-        '!src/**/generated/**',
     ],
     coverageDirectory: '<rootDir>/coverage',
     coverageReporters: ['text', 'lcov', 'html'],
@@ -22,7 +20,6 @@ module.exports = {
     moduleNameMapper: {
         '^@atc/(.*)$': '<rootDir>/../../packages/$1/src',
         '^@/(.*)$': '<rootDir>/src/$1',
-        '@grpc/grpc-js': '<rootDir>/__mocks__/@grpc/grpc-js.js',
     },
     transform: {
         '^.+\\.ts$': [
@@ -30,11 +27,15 @@ module.exports = {
             {
                 tsconfig: {
                     isolatedModules: true,
+                    module: 'CommonJS',
+                    target: 'ES2020',
                 },
+                useESM: false,
             },
         ],
     },
     testTimeout: 30000,
     clearMocks: true,
     restoreMocks: true,
+    transformIgnorePatterns: ['node_modules/(?!(.*\\.mjs$))'],
 };

@@ -6,7 +6,15 @@
     "scripts": {
         "start:dev": "dotenv -e ../../.env -c -- tsx --watch src/server.ts",
         "start:prod": "dotenv -e ../../.env -- node dist/server.js",
-        "build": "tsc -b"
+        "build": "tsc -b",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "test:unit": "jest --testPathPattern=__tests__",
+        "test:handlers": "jest --testPathPattern=handlers",
+        "test:services": "jest --testPathPattern=services",
+        "test:validations": "jest --testPathPattern=validations",
+        "test:ci": "jest --ci --coverage --watchAll=false"
     },
     "dependencies": {
         "@atc/common": "workspace:*",
