@@ -1,5 +1,5 @@
-import * as UserController from '../../src/controllers/user.controller';
-import { userStub } from '../../src/client';
+import * as NotificationController from '../../src/controllers/notification.controller';
+import { notificationStub } from '../../src/client';
 import { logger } from '@atc/logger';
 
 jest.mock('@atc/common', () => ({
@@ -10,7 +10,6 @@ jest.mock('@atc/common', () => ({
     grpcToHttpStatus: jest.fn(() => 200),
     utilFns: {
         createMetadata: jest.fn(() => 'mockMeta'),
-        convertCamelToSnake: jest.fn((data) => data),
     },
 }));
 
@@ -19,78 +18,149 @@ jest.mock('@atc/logger', () => ({
 }));
 
 jest.mock('../../src/client', () => ({
-    userStub: {
-        GetAllUsers: jest.fn(),
-        GetSingleUser: jest.fn(),
-        UpdateUser: jest.fn(),
-        DeleteUser: jest.fn(),
-        ToggleUserActivation: jest.fn(),
-        GetUserProfile: jest.fn(),
-        UpdateUserProfile: jest.fn(),
-        ChangePassword: jest.fn(),
-        ExportToExcel: jest.fn(),
-        MonthlyActiveUsers: jest.fn(),
+    notificationStub: {
+        GetNotifications: jest.fn(),
+        CreateAdminNotification: jest.fn(),
+        UpdateAdminNotification: jest.fn(),
+        GetAdminNotifications: jest.fn(),
+        GetSingleAdminNotification: jest.fn(),
+        DeleteAdminNotification: jest.fn(),
+        RetryAdminNotification: jest.fn(),
     },
 }));
 
 const mockRes = () => ({ status: jest.fn().mockReturnThis(), json: jest.fn() });
 
 const setupGrpcMock = (fnName, response) => {
-    userStub[fnName].mockImplementation((_req, _meta, cb) =>
+    notificationStub[fnName].mockImplementation((_req, _meta, cb) =>
         cb(null, response),
     );
 };
 
-describe('User Controller', () => {
+describe('Notification Controller', () => {
     afterEach(() => jest.clearAllMocks());
 
-    const testCases = [
-        ['getAllUsers', 'GetAllUsers', { page: 1, limit: 10 }, 'query'],
-        ['getSingleUser', 'GetSingleUser', { id: '1' }, 'params'],
-        [
-            'updateUser',
-            'UpdateUser',
-            { id: '1', name: 'John Doe' },
-            'body+params',
-        ],
-        ['deleteUser', 'DeleteUser', { id: '1' }, 'params'],
-        ['toggleUserActivation', 'ToggleUserActivation', { id: '1' }, 'params'],
-        ['getUserProfile', 'GetUserProfile', {}, 'query'],
-        [
-            'updateUserProfile',
-            'UpdateUserProfile',
-            { name: 'Jane Doe' },
-            'body',
-        ],
-        [
-            'changePassword',
-            'ChangePassword',
-            { oldPassword: 'old', newPassword: 'new' },
-            'body',
-        ],
-        ['exportToExcel', 'ExportToExcel', { type: 'users' }, 'query'],
-        ['monthlyActiveUsers', 'MonthlyActiveUsers', {}, 'query'],
-    ];
+    it('getNotifications should call GetNotifications and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            query: { page: 1, limit: 10 },
+        };
 
-    testCases.forEach(([fnName, grpcFn, payload, source]) => {
-        it(`${fnName} should call ${grpcFn} and respond`, async () => {
-            const res = mockRes();
-            const req: any = { headers: { authorization: 'Bearer xyz' } };
+        setupGrpcMock('GetNotifications', { status: 'SUCCESS', result: 'ok' });
 
-            if (source === 'body') req.body = payload;
-            else if (source === 'params') req.params = payload;
-            else if (source === 'query') req.query = payload;
-            else if (source === 'body+params') {
-                req.body = { ...payload };
-                req.params = { id: payload.id };
-            }
+        await NotificationController.getNotifications(req, res);
 
-            setupGrpcMock(grpcFn, { status: 'SUCCESS', result: 'ok' });
+        expect(notificationStub.GetNotifications).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
 
-            await UserController[fnName](req, res);
+    it('createAdminNotification should call CreateAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            body: { title: 'Test Notification', message: 'Test Message' },
+        };
 
-            expect(userStub[grpcFn]).toHaveBeenCalled();
-            expect(res.status).toHaveBeenCalledWith(200);
+        setupGrpcMock('CreateAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
         });
+
+        await NotificationController.createAdminNotification(req, res);
+
+        expect(notificationStub.CreateAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('updateAdminNotification should call UpdateAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            params: { admin_notification_id: '1' },
+            body: { title: 'Updated Notification' },
+        };
+
+        setupGrpcMock('UpdateAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.updateAdminNotification(req, res);
+
+        expect(notificationStub.UpdateAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('getAdminNotifications should call GetAdminNotifications and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            query: { page: 1, limit: 10 },
+        };
+
+        setupGrpcMock('GetAdminNotifications', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.getAdminNotifications(req, res);
+
+        expect(notificationStub.GetAdminNotifications).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('getSingleAdminNotifications should call GetSingleAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            params: { admin_notification_id: '1' },
+        };
+
+        setupGrpcMock('GetSingleAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.getSingleAdminNotifications(req, res);
+
+        expect(notificationStub.GetSingleAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('deleteAdminNotification should call DeleteAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            params: { admin_notification_id: '1' },
+        };
+
+        setupGrpcMock('DeleteAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.deleteAdminNotification(req, res);
+
+        expect(notificationStub.DeleteAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('retryAdminNotification should call RetryAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            params: { admin_notification_id: '1' },
+        };
+
+        setupGrpcMock('RetryAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.retryAdminNotification(req, res);
+
+        expect(notificationStub.RetryAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
     });
 });

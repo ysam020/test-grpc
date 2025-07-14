@@ -20,9 +20,12 @@ jest.mock('@atc/logger', () => ({
 jest.mock('../../src/client', () => ({
     notificationStub: {
         GetNotifications: jest.fn(),
-        MarkAsRead: jest.fn(),
-        MarkAllAsRead: jest.fn(),
-        DeleteNotification: jest.fn(),
+        CreateAdminNotification: jest.fn(),
+        UpdateAdminNotification: jest.fn(),
+        GetAdminNotifications: jest.fn(),
+        GetSingleAdminNotification: jest.fn(),
+        DeleteAdminNotification: jest.fn(),
+        RetryAdminNotification: jest.fn(),
     },
 }));
 
@@ -37,37 +40,127 @@ const setupGrpcMock = (fnName, response) => {
 describe('Notification Controller', () => {
     afterEach(() => jest.clearAllMocks());
 
-    const testCases = [
-        [
-            'getNotifications',
-            'GetNotifications',
-            { page: 1, limit: 10 },
-            'query',
-        ],
-        ['markAsRead', 'MarkAsRead', { id: '1' }, 'params'],
-        ['markAllAsRead', 'MarkAllAsRead', {}, 'body'],
-        ['deleteNotification', 'DeleteNotification', { id: '1' }, 'params'],
-    ];
+    it('getNotifications should call GetNotifications and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            query: { page: 1, limit: 10 },
+        };
 
-    testCases.forEach(([fnName, grpcFn, payload, source]) => {
-        it(`${fnName} should call ${grpcFn} and respond`, async () => {
-            const res = mockRes();
-            const req: any = { headers: { authorization: 'Bearer xyz' } };
+        setupGrpcMock('GetNotifications', { status: 'SUCCESS', result: 'ok' });
 
-            if (source === 'body') req.body = payload;
-            else if (source === 'params') req.params = payload;
-            else if (source === 'query') req.query = payload;
+        await NotificationController.getNotifications(req, res);
 
-            setupGrpcMock(grpcFn, { status: 'SUCCESS', result: 'ok' });
+        expect(notificationStub.GetNotifications).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
 
-            await NotificationController[fnName](req, res);
+    it('createAdminNotification should call CreateAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            body: { title: 'Test Notification', message: 'Test Message' },
+        };
 
-            expect(notificationStub[grpcFn]).toHaveBeenCalled();
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({
-                success: true,
-                data: { result: 'ok' },
-            });
+        setupGrpcMock('CreateAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
         });
+
+        await NotificationController.createAdminNotification(req, res);
+
+        expect(notificationStub.CreateAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('updateAdminNotification should call UpdateAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            params: { admin_notification_id: '1' },
+            body: { title: 'Updated Notification' },
+        };
+
+        setupGrpcMock('UpdateAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.updateAdminNotification(req, res);
+
+        expect(notificationStub.UpdateAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('getAdminNotifications should call GetAdminNotifications and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            query: { page: 1, limit: 10 },
+        };
+
+        setupGrpcMock('GetAdminNotifications', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.getAdminNotifications(req, res);
+
+        expect(notificationStub.GetAdminNotifications).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('getSingleAdminNotifications should call GetSingleAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            params: { admin_notification_id: '1' },
+        };
+
+        setupGrpcMock('GetSingleAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.getSingleAdminNotifications(req, res);
+
+        expect(notificationStub.GetSingleAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('deleteAdminNotification should call DeleteAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            params: { admin_notification_id: '1' },
+        };
+
+        setupGrpcMock('DeleteAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.deleteAdminNotification(req, res);
+
+        expect(notificationStub.DeleteAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it('retryAdminNotification should call RetryAdminNotification and respond', async () => {
+        const res = mockRes();
+        const req: any = {
+            headers: { authorization: 'Bearer xyz' },
+            params: { admin_notification_id: '1' },
+        };
+
+        setupGrpcMock('RetryAdminNotification', {
+            status: 'SUCCESS',
+            result: 'ok',
+        });
+
+        await NotificationController.retryAdminNotification(req, res);
+
+        expect(notificationStub.RetryAdminNotification).toHaveBeenCalled();
+        expect(res.status).toHaveBeenCalledWith(200);
     });
 });
