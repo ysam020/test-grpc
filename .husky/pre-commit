@@ -1,11 +1,8 @@
-echo '#!/usr/bin/env sh' > .husky/pre-commit
-echo '. "$(dirname -- "$0")/_/husky.sh"' >> .husky/pre-commit
-echo '' >> .husky/pre-commit
-echo 'echo "[Husky] Running Prettier..."' >> .husky/pre-commit
-echo 'pnpm format' >> .husky/pre-commit
-echo '' >> .husky/pre-commit
-echo 'echo "[Husky] Running lint..."' >> .husky/pre-commit
-echo 'pnpm lint' >> .husky/pre-commit
-echo '' >> .husky/pre-commit
-echo 'echo "[Husky] Running build..."' >> .husky/pre-commit
-echo 'pnpm build' >> .husky/pre-commitpnpm build
+echo "[Husky] Running Prettier..."
+pnpm format
+
+echo "[Husky] Running lint..."
+pnpm lint
+
+echo "[Husky] Running build..."
+pnpm build
