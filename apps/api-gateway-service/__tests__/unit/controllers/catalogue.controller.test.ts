@@ -1,5 +1,5 @@
-import * as CatalogueController from '../../src/controllers/catalogue.controller';
-import { catalogueStub } from '../../src/client';
+import * as CatalogueController from '../../../src/controllers/catalogue.controller';
+import { catalogueStub } from '../../../src/client';
 import { logger } from '@atc/logger';
 
 jest.mock('@atc/common', () => ({
@@ -17,7 +17,7 @@ jest.mock('@atc/logger', () => ({
     logger: { error: jest.fn() },
 }));
 
-jest.mock('../../src/client', () => ({
+jest.mock('../../../src/client', () => ({
     catalogueStub: {
         CreateProductGroup: jest.fn(),
         GetProductGroup: jest.fn(),

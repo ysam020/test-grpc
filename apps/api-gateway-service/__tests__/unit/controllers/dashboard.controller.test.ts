@@ -1,7 +1,7 @@
 import {
     dashboard,
     productDashboard,
-} from '../../src/controllers/dashboard.controller';
+} from '../../../src/controllers/dashboard.controller';
 import { apiResponse, grpcToHttpStatus, utilFns } from '@atc/common';
 import {
     notificationStub,
@@ -9,7 +9,7 @@ import {
     surveyStub,
     userStub,
     productStub,
-} from '../../src/client';
+} from '../../../src/client';
 
 jest.mock('@atc/common', () => ({
     apiResponse: jest.fn((res, statusCode, data) =>

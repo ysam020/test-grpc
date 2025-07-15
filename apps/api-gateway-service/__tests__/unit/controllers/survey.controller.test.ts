@@ -1,5 +1,5 @@
-import * as SurveyController from '../../src/controllers/survey.controller';
-import { surveyStub } from '../../src/client';
+import * as SurveyController from '../../../src/controllers/survey.controller';
+import { surveyStub } from '../../../src/client';
 import { logger } from '@atc/logger';
 
 jest.mock('@atc/common', () => ({
@@ -20,7 +20,7 @@ jest.mock('@atc/logger', () => ({
     logger: { error: jest.fn() },
 }));
 
-jest.mock('../../src/client', () => ({
+jest.mock('../../../src/client', () => ({
     surveyStub: {
         CreateSurvey: jest.fn(),
         DraftSurvey: jest.fn(),

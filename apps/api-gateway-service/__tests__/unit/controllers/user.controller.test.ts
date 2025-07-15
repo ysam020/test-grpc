@@ -1,5 +1,5 @@
-import * as NotificationController from '../../src/controllers/notification.controller';
-import { notificationStub } from '../../src/client';
+import * as NotificationController from '../../../src/controllers/notification.controller';
+import { notificationStub } from '../../../src/client';
 import { logger } from '@atc/logger';
 
 jest.mock('@atc/common', () => ({
@@ -17,7 +17,7 @@ jest.mock('@atc/logger', () => ({
     logger: { error: jest.fn() },
 }));
 
-jest.mock('../../src/client', () => ({
+jest.mock('../../../src/client', () => ({
     notificationStub: {
         GetNotifications: jest.fn(),
         CreateAdminNotification: jest.fn(),

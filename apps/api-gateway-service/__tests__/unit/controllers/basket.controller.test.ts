@@ -3,8 +3,8 @@ import {
     removeFromBasket,
     clearBasket,
     viewBasket,
-} from '../../src/controllers/basket.controller';
-import { userStub } from '../../src/client';
+} from '../../../src/controllers/basket.controller';
+import { userStub } from '../../../src/client';
 import { logger } from '@atc/logger';
 
 const mockFns = {
@@ -14,7 +14,7 @@ const mockFns = {
     ViewBasket: jest.fn(),
 };
 
-jest.mock('../../src/client', () => ({
+jest.mock('../../../src/client', () => ({
     userStub: {
         AddToBasket: jest.fn(),
         RemoveFromBasket: jest.fn(),

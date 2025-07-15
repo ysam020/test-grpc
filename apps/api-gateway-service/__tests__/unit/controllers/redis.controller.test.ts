@@ -1,4 +1,4 @@
-import * as RedisController from '../../src/controllers/redis.controller';
+import * as RedisController from '../../../src/controllers/redis.controller';
 import { logger } from '@atc/logger';
 
 jest.mock('@atc/common', () => ({

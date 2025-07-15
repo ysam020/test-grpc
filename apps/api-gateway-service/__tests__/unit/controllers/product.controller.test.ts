@@ -1,5 +1,5 @@
-import * as ProductController from '../../src/controllers/product.controller';
-import { productStub } from '../../src/client';
+import * as ProductController from '../../../src/controllers/product.controller';
+import { productStub } from '../../../src/client';
 import { logger } from '@atc/logger';
 
 jest.mock('@atc/common', () => ({
@@ -50,7 +50,7 @@ jest.mock('@grpc/grpc-js', () => ({
     },
 }));
 
-jest.mock('../../src/client', () => ({
+jest.mock('../../../src/client', () => ({
     productStub: {
         ProductDetails: jest.fn(),
         getAllProducts: jest.fn(),

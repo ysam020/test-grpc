@@ -7,9 +7,9 @@ import {
     resetPassword,
     refreshToken,
     oauthRegister,
-} from '../../src/controllers/auth.controller';
+} from '../../../src/controllers/auth.controller';
 
-import { clientStub } from '../../src/client';
+import { clientStub } from '../../../src/client';
 
 // Reassign individual mocked functions
 const mockFns = {
@@ -23,7 +23,7 @@ const mockFns = {
     oauthRegister: jest.fn(),
 };
 
-jest.mock('../../src/client', () => ({
+jest.mock('../../../src/client', () => ({
     clientStub: {
         RegisterUser: jest.fn(),
         VerifyUser: jest.fn(),

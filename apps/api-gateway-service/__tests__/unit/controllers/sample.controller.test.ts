@@ -1,5 +1,5 @@
-import * as SampleController from '../../src/controllers/sample.controller';
-import { sampleStub } from '../../src/client';
+import * as SampleController from '../../../src/controllers/sample.controller';
+import { sampleStub } from '../../../src/client';
 import { logger } from '@atc/logger';
 
 jest.mock('@atc/common', () => ({
@@ -18,7 +18,7 @@ jest.mock('@atc/logger', () => ({
     logger: { error: jest.fn() },
 }));
 
-jest.mock('../../src/client', () => ({
+jest.mock('../../../src/client', () => ({
     sampleStub: {
         CreateSample: jest.fn(),
         DraftSample: jest.fn(),

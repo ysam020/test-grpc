@@ -1,5 +1,5 @@
-import * as WidgetController from '../../src/controllers/widget.controller';
-import { widgetStub } from '../../src/client';
+import * as WidgetController from '../../../src/controllers/widget.controller';
+import { widgetStub } from '../../../src/client';
 import { logger } from '@atc/logger';
 
 jest.mock('@atc/common', () => ({
@@ -18,7 +18,7 @@ jest.mock('@atc/logger', () => ({
     logger: { error: jest.fn() },
 }));
 
-jest.mock('../../src/client', () => ({
+jest.mock('../../../src/client', () => ({
     widgetStub: {
         AddWidget: jest.fn(),
         GetWidgets: jest.fn(),
