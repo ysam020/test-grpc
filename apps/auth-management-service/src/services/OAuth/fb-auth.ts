@@ -15,11 +15,11 @@ const authorizeFacebook = async (accessToken: string, userId: string) => {
         const { first_name, last_name } = utilFns.splitName(name);
 
         return {
-            email: email!,
-            first_name: first_name,
-            last_name: last_name,
+            email,
+            first_name,
+            last_name,
             auth: AuthProviderEnum.META,
-            picture: picture.data.url,
+            picture: picture?.data?.url,
         };
     } catch (error: any | Error) {
         logger.error(error.message);

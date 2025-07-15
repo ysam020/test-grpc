@@ -1,41 +1,24 @@
+/** @type {import('jest').Config} */
 module.exports = {
-    displayName: 'Auth Management Service',
     preset: 'ts-jest',
     testEnvironment: 'node',
-    rootDir: '.',
-    testMatch: [
-        '<rootDir>/__tests__/**/*.test.{ts,js}',
-        '<rootDir>/src/**/*.test.{ts,js}',
-    ],
-    collectCoverageFrom: [
-        'src/**/*.{ts,js}',
-        '!src/**/*.d.ts',
-        '!src/**/index.ts',
-        '!src/**/*.interface.ts',
-        '!src/**/*.type.ts',
-    ],
-    coverageDirectory: '<rootDir>/coverage',
-    coverageReporters: ['text', 'lcov', 'html'],
-    setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-    moduleNameMapper: {
-        '^@atc/(.*)$': '<rootDir>/../../packages/$1/src',
-        '^@/(.*)$': '<rootDir>/src/$1',
-    },
+    roots: ['<rootDir>/src', '<rootDir>/__tests__'],
+    testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.spec.ts'],
     transform: {
-        '^.+\\.ts$': [
-            'ts-jest',
-            {
-                tsconfig: {
-                    isolatedModules: true,
-                    module: 'CommonJS',
-                    target: 'ES2020',
-                },
-                useESM: false,
-            },
-        ],
+        '^.+\\.ts$': 'ts-jest',
     },
-    testTimeout: 30000,
+    collectCoverageFrom: [
+        'src/**/*.ts',
+        '!src/**/*.d.ts',
+        '!src/server.ts',
+        '!src/client.ts',
+    ],
+    coverageDirectory: 'coverage',
+    coverageReporters: ['text', 'lcov', 'html'],
+    setupFilesAfterEnv: ['<rootDir>/__tests__/setup.ts'],
+    testTimeout: 10000,
+    verbose: true,
     clearMocks: true,
     restoreMocks: true,
-    transformIgnorePatterns: ['node_modules/(?!(.*\\.mjs$))'],
+    // Removed moduleNameMapping as it's causing warnings
 };
