@@ -1,0 +1,52 @@
+// apps/notification-management-service/__tests__/__mocks__/@atc/db.js
+module.exports = {
+    prisma: {
+        adminNotification: {
+            create: jest.fn(),
+            findUnique: jest.fn(),
+            findMany: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn(),
+            count: jest.fn(),
+            upsert: jest.fn(),
+            findFirst: jest.fn(),
+        },
+        notification: {
+            create: jest.fn(),
+            findUnique: jest.fn(),
+            findMany: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn(),
+            count: jest.fn(),
+            upsert: jest.fn(),
+            findFirst: jest.fn(),
+        },
+        priceAlert: {
+            create: jest.fn(),
+            findUnique: jest.fn(),
+            findMany: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn(),
+            count: jest.fn(),
+            upsert: jest.fn(),
+            findFirst: jest.fn(),
+        },
+        user: {
+            findUnique: jest.fn(),
+            findMany: jest.fn(),
+            create: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn(),
+        },
+        product: {
+            findUnique: jest.fn(),
+            findMany: jest.fn(),
+            create: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn(),
+        },
+        $transaction: jest.fn(),
+        $connect: jest.fn(),
+        $disconnect: jest.fn(),
+    },
+};
