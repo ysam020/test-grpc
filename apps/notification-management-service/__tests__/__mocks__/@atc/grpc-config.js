@@ -1,43 +1,58 @@
 // apps/notification-management-service/__tests__/__mocks__/@atc/grpc-config.js
 module.exports = {
     serviceDefinitions: {
+        userPackageDefinition: {
+            user: {
+                UserService: function UserService(address, credentials) {
+                    this.GetUser = jest.fn();
+                    this.GetUsers = jest.fn();
+                    this.ValidateUser = jest.fn();
+                    this.GetUsersByRole = jest.fn();
+                    this.GetUserPreferences = jest.fn();
+                    this.UpdateUserPreferences = jest.fn();
+                    return this;
+                },
+            },
+        },
+        productPackageDefinition: {
+            product: {
+                ProductService: function ProductService(address, credentials) {
+                    this.GetProduct = jest.fn();
+                    this.GetProducts = jest.fn();
+                    this.CreateProduct = jest.fn();
+                    this.UpdateProduct = jest.fn();
+                    this.DeleteProduct = jest.fn();
+                    this.GetProductPrice = jest.fn();
+                    this.UpdateProductPrice = jest.fn();
+                    return this;
+                },
+            },
+        },
         notificationPackageDefinition: {
             notification: {
                 NotificationService: {
                     service: {
-                        CreateAdminNotification: jest.fn(),
-                        UpdateAdminNotification: jest.fn(),
-                        GetAdminNotifications: jest.fn(),
-                        GetSingleAdminNotification: jest.fn(),
-                        DeleteAdminNotification: jest.fn(),
-                        AddPriceAlert: jest.fn(),
-                        GetPriceAlerts: jest.fn(),
-                        DeletePriceAlert: jest.fn(),
-                        GetNotifications: jest.fn(),
-                        CreateNotification: jest.fn(),
-                        RetryAdminNotification: jest.fn(),
-                        GetAverageNotificationCount: jest.fn(),
+                        CreateAdminNotification: {},
+                        UpdateAdminNotification: {},
+                        GetAdminNotifications: {},
+                        GetSingleAdminNotification: {},
+                        DeleteAdminNotification: {},
+                        AddPriceAlert: {},
+                        DeletePriceAlert: {},
+                        GetPriceAlerts: {},
+                        GetNotifications: {},
+                        CreateNotification: {},
+                        RetryAdminNotification: {},
+                        GetAverageNotificationCount: {},
                     },
                 },
-            },
-        },
-        userPackageDefinition: {
-            user: {
-                UserService: jest.fn().mockImplementation(() => ({
-                    GetUser: jest.fn(),
-                    GetUsers: jest.fn(),
-                    CreateUser: jest.fn(),
-                    UpdateUser: jest.fn(),
-                    DeleteUser: jest.fn(),
-                    ValidateUser: jest.fn(),
-                })),
             },
         },
         healthPackageDefinition: {
             health: {
                 HealthService: {
                     service: {
-                        healthCheck: jest.fn(),
+                        healthCheck: {},
                     },
                 },
             },

@@ -14,7 +14,6 @@ module.exports = {
     getNotificationByID: jest.fn(),
     updateNotificationByID: jest.fn(),
     deleteNotificationByID: jest.fn(),
-    getNotificationsWithPagination: jest.fn(),
     markNotificationAsRead: jest.fn(),
     getUnreadNotificationCount: jest.fn(),
     getNotificationsByUser: jest.fn(),

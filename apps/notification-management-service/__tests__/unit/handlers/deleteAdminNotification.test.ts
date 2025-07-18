@@ -1,95 +1,72 @@
-// apps/notification-management-service/__tests__/unit/handlers/deleteAdminNotification.test.ts
-import { status } from '@grpc/grpc-js';
 import { deleteAdminNotification } from '../../../src/handlers/deleteAdminNotification';
 import {
     getAdminNotificationByID,
     deleteAdminNotificationByID,
 } from '../../../src/services/model.service';
+import { status } from '@grpc/grpc-js';
+import { logger } from '@atc/logger';
+import { errorMessage, responseMessage, utilFns } from '@atc/common';
 
+// Mock dependencies
 jest.mock('../../../src/services/model.service');
-jest.mock('@atc/common', () => ({
-    utilFns: {
-        removeEmptyFields: jest.fn(),
-    },
-    errorMessage: {
-        ADMIN_NOTIFICATION: {
-            NOT_FOUND: 'Admin notification not found',
-        },
-        OTHER: {
-            SOMETHING_WENT_WRONG: 'Something went wrong',
-        },
-    },
-    responseMessage: {
-        ADMIN_NOTIFICATION: {
-            DELETED: 'Admin notification deleted successfully',
-        },
-    },
-}));
+jest.mock('@atc/logger');
 
-jest.mock('@atc/logger', () => ({
-    logger: {
-        error: jest.fn(),
-    },
-}));
+const mockGetAdminNotificationByID = getAdminNotificationByID as jest.Mock;
+const mockDeleteAdminNotificationByID =
+    deleteAdminNotificationByID as jest.Mock;
 
-const { utilFns } = require('@atc/common');
-
-describe('deleteAdminNotification Handler', () => {
-    let mockCallback: jest.MockedFunction<any>;
-    let mockCall: any;
+describe('deleteAdminNotification', () => {
+    const callback = jest.fn();
+    const mockCall: any = {
+        request: {
+            admin_notification_id: 'admin-notif-123',
+        },
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
-        mockCallback = jest.fn();
-        mockCall = {
-            request: {
-                admin_notification_id: 'test-id',
-            },
-        };
     });
 
     it('should delete admin notification successfully', async () => {
-        const mockNotification = { id: 'test-id', title: 'Test' };
+        mockGetAdminNotificationByID.mockResolvedValue({
+            id: 'admin-notif-123',
+        });
+        mockDeleteAdminNotificationByID.mockResolvedValue({});
 
-        utilFns.removeEmptyFields.mockReturnValue(mockCall.request);
-        (getAdminNotificationByID as jest.Mock).mockResolvedValue(
-            mockNotification,
+        await deleteAdminNotification(mockCall, callback);
+
+        expect(mockGetAdminNotificationByID).toHaveBeenCalledWith(
+            'admin-notif-123',
         );
-        (deleteAdminNotificationByID as jest.Mock).mockResolvedValue(true);
-
-        await deleteAdminNotification(mockCall, mockCallback);
-
-        expect(getAdminNotificationByID).toHaveBeenCalledWith('test-id');
-        expect(deleteAdminNotificationByID).toHaveBeenCalledWith('test-id');
-        expect(mockCallback).toHaveBeenCalledWith(null, {
-            message: 'Admin notification deleted successfully',
+        expect(mockDeleteAdminNotificationByID).toHaveBeenCalledWith(
+            'admin-notif-123',
+        );
+        expect(callback).toHaveBeenCalledWith(null, {
+            message: responseMessage.ADMIN_NOTIFICATION.DELETED,
             status: status.OK,
         });
     });
 
-    it('should return NOT_FOUND when notification does not exist', async () => {
-        utilFns.removeEmptyFields.mockReturnValue(mockCall.request);
-        (getAdminNotificationByID as jest.Mock).mockResolvedValue(null);
+    it('should return NOT_FOUND if admin notification does not exist', async () => {
+        mockGetAdminNotificationByID.mockResolvedValue(null);
 
-        await deleteAdminNotification(mockCall, mockCallback);
+        await deleteAdminNotification(mockCall, callback);
 
-        expect(mockCallback).toHaveBeenCalledWith(null, {
-            message: 'Admin notification not found',
+        expect(callback).toHaveBeenCalledWith(null, {
+            message: errorMessage.ADMIN_NOTIFICATION.NOT_FOUND,
             status: status.NOT_FOUND,
         });
-        expect(deleteAdminNotificationByID).not.toHaveBeenCalled();
     });
 
-    it('should handle errors gracefully', async () => {
-        utilFns.removeEmptyFields.mockReturnValue(mockCall.request);
-        (getAdminNotificationByID as jest.Mock).mockRejectedValue(
-            new Error('Database error'),
-        );
+    it('should return INTERNAL error on exception', async () => {
+        const error = new Error('DB failure');
+        mockGetAdminNotificationByID.mockRejectedValue(error);
 
-        await deleteAdminNotification(mockCall, mockCallback);
+        await deleteAdminNotification(mockCall, callback);
 
-        expect(mockCallback).toHaveBeenCalledWith(null, {
-            message: 'Something went wrong',
+        expect(logger.error).toHaveBeenCalledWith(error);
+        expect(callback).toHaveBeenCalledWith(null, {
+            message: errorMessage.OTHER.SOMETHING_WENT_WRONG,
             status: status.INTERNAL,
         });
     });

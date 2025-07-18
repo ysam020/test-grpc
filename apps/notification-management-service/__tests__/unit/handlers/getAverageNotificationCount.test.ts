@@ -1,66 +1,57 @@
-// apps/notification-management-service/__tests__/unit/handlers/getAverageNotificationCount.test.ts
-import { status } from '@grpc/grpc-js';
-import { getAverageNotificationCount } from '../../../src/handlers/getAverageNotificationCount';
-import { getAverageNotificationCountFromDB } from '../../../src/services/model.service';
+// __tests__/unit/handlers/getAverageNotificationCount.test.ts
 
-jest.mock('../../../src/services/model.service');
+import { getAverageNotificationCount } from '../../../src/handlers/getAverageNotificationCount';
+import { avgNotificationCount } from '../../../src/services/model.service';
+import { status } from '@grpc/grpc-js';
+
+// Mock external dependencies
+jest.mock('../../../src/services/model.service', () => ({
+    avgNotificationCount: jest.fn(),
+}));
+
+jest.mock('@atc/logger', () => ({
+    logger: { error: jest.fn() },
+}));
+
 jest.mock('@atc/common', () => ({
+    responseMessage: {
+        OTHER: {
+            DATA_FOUND: 'Data found successfully',
+        },
+    },
     errorMessage: {
         OTHER: {
             SOMETHING_WENT_WRONG: 'Something went wrong',
         },
     },
-    responseMessage: {
-        ADMIN_NOTIFICATION: {
-            AVERAGE_COUNT_FETCHED:
-                'Average notification count fetched successfully',
-        },
-    },
 }));
 
-jest.mock('@atc/logger', () => ({
-    logger: {
-        error: jest.fn(),
-    },
-}));
-
-describe('getAverageNotificationCount Handler', () => {
-    let mockCallback: jest.MockedFunction<any>;
-    let mockCall: any;
+describe('getAverageNotificationCount', () => {
+    const mockCallback = jest.fn();
 
     beforeEach(() => {
         jest.clearAllMocks();
-        mockCallback = jest.fn();
-        mockCall = {
-            request: {},
-        };
     });
 
-    it('should fetch average notification count successfully', async () => {
-        const mockCount = 150;
+    it('should return average notification count successfully', async () => {
+        (avgNotificationCount as jest.Mock).mockResolvedValue(10.6);
 
-        (getAverageNotificationCountFromDB as jest.Mock).mockResolvedValue(
-            mockCount,
-        );
+        await getAverageNotificationCount({} as any, mockCallback);
 
-        await getAverageNotificationCount(mockCall, mockCallback);
-
-        expect(getAverageNotificationCountFromDB).toHaveBeenCalled();
+        expect(avgNotificationCount).toHaveBeenCalledTimes(1);
         expect(mockCallback).toHaveBeenCalledWith(null, {
-            message: 'Average notification count fetched successfully',
+            message: 'Data found successfully',
             status: status.OK,
-            data: {
-                count: mockCount,
-            },
+            data: { count: 11 },
         });
     });
 
-    it('should handle errors gracefully', async () => {
-        (getAverageNotificationCountFromDB as jest.Mock).mockRejectedValue(
-            new Error('Database error'),
+    it('should handle errors and return default error response', async () => {
+        (avgNotificationCount as jest.Mock).mockRejectedValue(
+            new Error('DB error'),
         );
 
-        await getAverageNotificationCount(mockCall, mockCallback);
+        await getAverageNotificationCount({} as any, mockCallback);
 
         expect(mockCallback).toHaveBeenCalledWith(null, {
             message: 'Something went wrong',

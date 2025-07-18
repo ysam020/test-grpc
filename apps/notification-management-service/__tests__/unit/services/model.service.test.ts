@@ -1,293 +1,203 @@
-// apps/notification-management-service/__tests__/unit/services/model.service.test.ts
-import { addAdminNotification, getAdminNotificationByID, updateAdminNotificationByID } from '../../../src/services/model.service';
+import {
+    addAdminNotification,
+    getAdminNotificationByID,
+    updateAdminNotificationByID,
+    getAllAdminNotifications,
+    deleteAdminNotificationByID,
+    getProductByID,
+    upsertPriceAlert,
+    getPriceAlertByProductID,
+    deletePriceAlertByID,
+    getPriceAlertsByUserID,
+    getAllNotificationsByUserID,
+    addNewNotification,
+    getFailedNotifications,
+    markNotificationsAsSent,
+    avgNotificationCount,
+} from '../../../src/services/model.service';
 
-jest.mock('@atc/db', () => ({
-    prismaClient: {
-        adminNotification: {
-            create: jest.fn(),
-            findUnique: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-            count: jest.fn(),
-        },
-        priceAlert: {
-        create: jest.fn(),
-        findUnique: jest.fn(),
-        findMany: jest.fn(),
-        upsert: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
-    },
-    masterProduct: {
-        findUnique: jest.fn(),
-        findMany: jest.fn(),
-    },
-    user: {
-        findUnique: jest.fn(),
-        findMany: jest.fn(),
-    },
-};
+import { dbClient, prismaClient } from '@atc/db';
 
-// apps/notification-management-service/__tests__/__mocks__/common.ts
-export const mockCommon = {
-    utilFns: {
-        removeEmptyFields: jest.fn(),
-    },
-    errorMessage: {
-        ADMIN_NOTIFICATION: {
-            NOT_FOUND: 'Admin notification not found',
-            NO_FAILED_NOTIFICATIONS: 'No failed notifications found',
-            NO_TITLE: 'Title is required',
-            NO_DESCRIPTION: 'Description is required',
-            NO_CHANNEL_SELECTED: 'At least one channel must be selected',
-            NO_STATE_SELECTED: 'At least one state must be selected',
-            NO_AGE_GROUP_SELECTED: 'At least one age group must be selected',
-            INCOMPLETE_SCHEDULE_FIELDS: 'All schedule fields are required',
-        },
-        NOTIFICATION: {
-            NOT_FOUND: 'Notification not found',
-            NO_TITLE: 'Title is required',
-            NO_DESCRIPTION: 'Description is required',
-            NO_USER_ID: 'User ID is required',
-            NO_TYPE: 'Type is required',
-        },
-        PRICE_ALERT: {
-            NOT_FOUND: 'Price alert not found',
-            NO_PRODUCT_ID: 'Product ID is required',
-            NO_TARGET_PRICE: 'Target price is required',
-        },
-        PRODUCT: {
-            NOT_FOUND: 'Product not found',
-        },
-        OTHER: {
-            SOMETHING_WENT_WRONG: 'Something went wrong',
-        },
-        WIDGET: {
-            DEPLOY_DATE_PAST: 'Schedule date cannot be in the past',
-        },
-    },
-    responseMessage: {
-        ADMIN_NOTIFICATION: {
-            CREATED: 'Admin notification created successfully',
-            UPDATED: 'Admin notification updated successfully',
-            DELETED: 'Admin notification deleted successfully',
-            RETRY_SUCCESS: 'Notifications retried successfully',
-        },
-        NOTIFICATION: {
-            CREATED: 'Notification created successfully',
-            UPDATED: 'Notification updated successfully',
-            DELETED: 'Notification deleted successfully',
-        },
-        PRICE_ALERT: {
-            ADDED: 'Price alert added successfully',
-            UPDATED: 'Price alert updated successfully',
-            DELETED: 'Price alert deleted successfully',
-        },
-    },
-    eventBridge: {
-        createEventBridgeSchedule: jest.fn(),
-        deleteEventBridgeSchedule: jest.fn(),
-    },
-    snsHelper: {
-        createTopic: jest.fn(),
-        publishMessage: jest.fn(),
-    },
-    sendEmail: jest.fn(),
-    tokenFns: {
-        generateToken: jest.fn(),
-        verifyToken: jest.fn(),
-    },
-    NotificationChannelEnum: {
-        EMAIL: 'EMAIL',
-        PUSH: 'PUSH',
-        SMS: 'SMS',
-    },
-    StateEnum: {
-        ALL: 'ALL',
-        DELHI: 'DELHI',
-        MUMBAI: 'MUMBAI',
-    },
-    AgeEnum: {
-        ALL: 'ALL',
-        YOUNG: 'YOUNG',
-        ADULT: 'ADULT',
-    },
-    GenderEnum: {
-        BOTH: 'BOTH',
-        MALE: 'MALE',
-        FEMALE: 'FEMALE',
-    },
-    SelectionOptionEnum: {
-        ALL: 'ALL',
-        YES: 'YES',
-        NO: 'NO',
-    },
-    NotificationTypeEnum: {
-        REGISTRATION: 'REGISTRATION',
-        PRICE_ALERT: 'PRICE_ALERT',
-        PROMOTION: 'PROMOTION',
-    },
-    UserRoleEnum: {
-        ADMIN: 'ADMIN',
-        USER: 'USER',
-    },
-};
+jest.mock('@atc/db');
 
-// Additional handler tests
+const mockCreate = jest.fn();
+const mockFindUnique = jest.fn();
+const mockUpdate = jest.fn();
+const mockDelete = jest.fn();
+const mockFindMany = jest.fn();
+const mockCount = jest.fn();
+const mockUpsert = jest.fn();
+const mockUpdateMany = jest.fn();
+const mockQueryRawUnsafe = jest.fn();
 
-// apps/notification-management-service/__tests__/unit/handlers/updateAdminNotification.test.ts
-import { status } from '@grpc/grpc-js';
-import { updateAdminNotification } from '../../../src/handlers/updateAdminNotification';
-import { getAdminNotificationByID, updateAdminNotificationByID } from '../../../src/services/model.service';
+beforeEach(() => {
+    jest.clearAllMocks();
 
-jest.mock('../../../src/services/model.service');
-jest.mock('@atc/common', () => ({
-    utilFns: {
-        removeEmptyFields: jest.fn(),
-    },
-    errorMessage: {
-        ADMIN_NOTIFICATION: {
-            NOT_FOUND: 'Admin notification not found',
-        },
-        OTHER: {
-            SOMETHING_WENT_WRONG: 'Something went wrong',
-        },
-    },
-    responseMessage: {
-        ADMIN_NOTIFICATION: {
-            UPDATED: 'Admin notification updated successfully',
-        },
-    },
-    eventBridge: {
-        createEventBridgeSchedule: jest.fn(),
-        deleteEventBridgeSchedule: jest.fn(),
-    },
-}));
+    dbClient.adminNotification = {
+        create: mockCreate,
+        findUnique: mockFindUnique,
+        update: mockUpdate,
+        delete: mockDelete,
+        count: mockCount,
+    };
 
-jest.mock('@atc/logger', () => ({
-    logger: {
-        error: jest.fn(),
-    },
-}));
+    dbClient.notification = {
+        findMany: mockFindMany,
+        count: mockCount,
+        create: mockCreate,
+        updateMany: mockUpdateMany,
+    };
 
-const { utilFns, eventBridge } = require('@atc/common');
+    dbClient.priceAlert = {
+        upsert: mockUpsert,
+        findUnique: mockFindUnique,
+        delete: mockDelete,
+        findMany: mockFindMany,
+        count: mockCount,
+    };
 
-describe('updateAdminNotification Handler', () => {
-    let mockCallback: jest.MockedFunction<any>;
-    let mockCall: any;
+    dbClient.masterProduct = {
+        findUnique: mockFindUnique,
+    };
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        mockCallback = jest.fn();
-        mockCall = {
-            request: {
-                admin_notification_id: 'test-id',
-                title: 'Updated Title',
-                description: 'Updated Description',
+    dbClient.$queryRawUnsafe = mockQueryRawUnsafe;
+});
+
+describe('Notification Management Functions', () => {
+    it('should add admin notification', async () => {
+        const data = { title: 'Test' };
+        mockCreate.mockResolvedValue(data);
+        const result = await addAdminNotification(data);
+        expect(mockCreate).toHaveBeenCalledWith({ data });
+        expect(result).toEqual(data);
+    });
+
+    it('should get admin notification by ID', async () => {
+        const mockResult = { id: '123' };
+        mockFindUnique.mockResolvedValue(mockResult);
+        const result = await getAdminNotificationByID('123');
+        expect(mockFindUnique).toHaveBeenCalledWith({ where: { id: '123' } });
+        expect(result).toEqual(mockResult);
+    });
+
+    it('should update admin notification by ID', async () => {
+        const data = { title: 'Updated' };
+        mockUpdate.mockResolvedValue(data);
+        const result = await updateAdminNotificationByID('123', data);
+        expect(mockUpdate).toHaveBeenCalledWith({ where: { id: '123' }, data });
+        expect(result).toEqual(data);
+    });
+
+    it('should delete admin notification by ID', async () => {
+        const deleted = { id: '123' };
+        mockDelete.mockResolvedValue(deleted);
+        const result = await deleteAdminNotificationByID('123');
+        expect(mockDelete).toHaveBeenCalledWith({ where: { id: '123' } });
+        expect(result).toEqual(deleted);
+    });
+
+    it('should get product by ID', async () => {
+        const mockProduct = { id: 'prod123' };
+        mockFindUnique.mockResolvedValue(mockProduct);
+        const result = await getProductByID('prod123');
+        expect(mockFindUnique).toHaveBeenCalledWith({
+            where: { id: 'prod123' },
+        });
+        expect(result).toEqual(mockProduct);
+    });
+
+    it('should upsert price alert', async () => {
+        const input = {
+            User: { connect: { id: 'user1' } },
+            MasterProduct: { connect: { id: 'prod1' } },
+            target_price: 99,
+        };
+        const upserted = { ...input, id: 'pa1' };
+        mockUpsert.mockResolvedValue(upserted);
+        const result = await upsertPriceAlert(input);
+        expect(mockUpsert).toHaveBeenCalledWith({
+            where: {
+                pricealertmatched_unique: {
+                    user_id: 'user1',
+                    product_id: 'prod1',
+                },
             },
-        };
+            update: { target_price: 99 },
+            create: input,
+        });
+        expect(result).toEqual(upserted);
     });
 
-    it('should update admin notification successfully', async () => {
-        const mockExistingNotification = {
-            id: 'test-id',
-            title: 'Old Title',
-            description: 'Old Description',
-            status: 'SCHEDULED',
-        };
-
-        const mockUpdatedNotification = {
-            id: 'test-id',
-            title: 'Updated Title',
-            description: 'Updated Description',
-            scheduled_at: new Date(),
-            channels: ['EMAIL'],
-            target_users: {},
-            status: 'SCHEDULED',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-
-        utilFns.removeEmptyFields.mockReturnValue(mockCall.request);
-        (getAdminNotificationByID as jest.Mock).mockResolvedValue(mockExistingNotification);
-        (updateAdminNotificationByID as jest.Mock).mockResolvedValue(mockUpdatedNotification);
-
-        await updateAdminNotification(mockCall, mockCallback);
-
-        expect(getAdminNotificationByID).toHaveBeenCalledWith('test-id');
-        expect(updateAdminNotificationByID).toHaveBeenCalledWith('test-id', {
-            title: 'Updated Title',
-            description: 'Updated Description',
-        });
-
-        expect(mockCallback).toHaveBeenCalledWith(null, {
-            message: 'Admin notification updated successfully',
-            status: status.OK,
-            data: expect.objectContaining({
-                admin_notification_id: 'test-id',
-                title: 'Updated Title',
-                description: 'Updated Description',
-            }),
-        });
-    });
-
-    it('should return NOT_FOUND when notification does not exist', async () => {
-        utilFns.removeEmptyFields.mockReturnValue(mockCall.request);
-        (getAdminNotificationByID as jest.Mock).mockResolvedValue(null);
-
-        await updateAdminNotification(mockCall, mockCallback);
-
-        expect(mockCallback).toHaveBeenCalledWith(null, {
-            message: 'Admin notification not found',
-            status: status.NOT_FOUND,
-            data: null,
-        });
-    });
-
-    it('should handle schedule updates with EventBridge', async () => {
-        const mockCallWithSchedule = {
-            request: {
-                admin_notification_id: 'test-id',
-                title: 'Updated Title',
-                schedule_date: '2025-12-31',
-                schedule_hour: 15,
-                schedule_minute: 30,
+    it('should get price alert by product ID and user ID', async () => {
+        const alert = { id: 'alert123' };
+        mockFindUnique.mockResolvedValue(alert);
+        const result = await getPriceAlertByProductID('prod1', 'user1');
+        expect(mockFindUnique).toHaveBeenCalledWith({
+            where: {
+                pricealertmatched_unique: {
+                    product_id: 'prod1',
+                    user_id: 'user1',
+                },
             },
-        };
-
-        const mockExistingNotification = {
-            id: 'test-id',
-            title: 'Old Title',
-            status: 'SCHEDULED',
-        };
-
-        const mockUpdatedNotification = {
-            id: 'test-id',
-            title: 'Updated Title',
-            scheduled_at: new Date('2025-12-31T15:30:00Z'),
-            channels: ['EMAIL'],
-            target_users: {},
-            status: 'SCHEDULED',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-
-        utilFns.removeEmptyFields.mockReturnValue(mockCallWithSchedule.request);
-        (getAdminNotificationByID as jest.Mock).mockResolvedValue(mockExistingNotification);
-        (updateAdminNotificationByID as jest.Mock).mockResolvedValue(mockUpdatedNotification);
-        eventBridge.deleteEventBridgeSchedule.mockResolvedValue(true);
-        eventBridge.createEventBridgeSchedule.mockResolvedValue(true);
-
-        process.env.ADMIN_NOTIFICATION_ARN = 'test-arn';
-
-        await updateAdminNotification(mockCallWithSchedule, mockCallback);
-
-        expect(eventBridge.deleteEventBridgeSchedule).toHaveBeenCalledWith(`admin-notification-test-id`);
-        expect(eventBridge.createEventBridgeSchedule).toHaveBeenCalledWith({
-            scheduleName: 'admin-notification-test-id',
-            scheduleDate: expect.any(Date),
-            targetArn: 'test-arn',
-            inputPayload: { adminNotificationID: 'test-id' },
         });
+        expect(result).toEqual(alert);
+    });
+
+    it('should delete price alert by ID', async () => {
+        const deleted = { id: 'alert123' };
+        mockDelete.mockResolvedValue(deleted);
+        const result = await deletePriceAlertByID('alert123');
+        expect(mockDelete).toHaveBeenCalledWith({ where: { id: 'alert123' } });
+        expect(result).toEqual(deleted);
+    });
+
+    it('should get price alerts by user ID', async () => {
+        mockFindMany.mockResolvedValue([{ id: 'a' }, { id: 'b' }]);
+        mockCount.mockResolvedValue(2);
+        const result = await getPriceAlertsByUserID('user1', 1, 10);
+        expect(result.priceAlerts.length).toBe(2);
+        expect(result.total).toBe(2);
+    });
+
+    it('should add new notification', async () => {
+        const input = { title: 'Notify!' };
+        mockCreate.mockResolvedValue(input);
+        const result = await addNewNotification(input);
+        expect(mockCreate).toHaveBeenCalledWith({ data: input });
+        expect(result).toEqual(input);
+    });
+
+    it('should get all notifications by user ID and type', async () => {
+        mockFindMany.mockResolvedValue([{ id: 'n1' }]);
+        mockCount.mockResolvedValue(1);
+        const result = await getAllNotificationsByUserID(
+            1,
+            10,
+            'user1',
+            'PRICE_ALERT',
+        );
+        expect(result.notifications.length).toBe(1);
+        expect(result.total).toBe(1);
+    });
+
+    it('should get failed notifications', async () => {
+        const failed = [{ id: 'n1' }];
+        mockFindMany.mockResolvedValue(failed);
+        const result = await getFailedNotifications('admin1');
+        expect(mockFindMany).toHaveBeenCalled();
+        expect(result).toEqual(failed);
+    });
+
+    it('should mark notifications as sent', async () => {
+        const updated = { count: 2 };
+        mockUpdateMany.mockResolvedValue(updated);
+        const result = await markNotificationsAsSent(['n1', 'n2']);
+        expect(result).toEqual(updated);
+    });
+
+    it('should calculate avg notification count', async () => {
+        mockCount.mockResolvedValueOnce(8).mockResolvedValueOnce(2);
+        const result = await avgNotificationCount();
+        expect(result).toBe(0.8);
     });
 });

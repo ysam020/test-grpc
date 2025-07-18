@@ -1,105 +1,98 @@
-// apps/notification-management-service/__tests__/unit/handlers/getNotifications.test.ts
-import { status } from '@grpc/grpc-js';
 import { getNotifications } from '../../../src/handlers/getNotifications';
-import { getNotificationsWithPagination } from '../../../src/services/model.service';
+import { prismaClient } from '@atc/db';
+import { getAllNotificationsByUserID } from '../../../src/services/model.service';
+import { logger } from '@atc/logger';
+import { status } from '@grpc/grpc-js';
+import { responseMessage, errorMessage } from '@atc/common';
 
 jest.mock('../../../src/services/model.service');
-jest.mock('@atc/common', () => ({
-    utilFns: {
-        removeEmptyFields: jest.fn(),
-    },
-    errorMessage: {
-        OTHER: {
-            SOMETHING_WENT_WRONG: 'Something went wrong',
+jest.mock('@atc/logger');
+
+describe('getNotifications', () => {
+    const mockCallback = jest.fn();
+    const mockUser = { userID: 'user123' };
+    const mockRequest = {
+        page: 1,
+        limit: 10,
+    };
+
+    const call: any = {
+        request: mockRequest,
+        user: mockUser,
+    };
+
+    const mockNotifications = [
+        {
+            id: 'notif-1',
+            title: 'Test Title 1',
+            description: 'Test Description 1',
+            createdAt: new Date('2024-07-15T10:00:00Z'),
         },
-    },
-    responseMessage: {
-        NOTIFICATION: {
-            FETCHED: 'Notifications fetched successfully',
+        {
+            id: 'notif-2',
+            title: 'Test Title 2',
+            description: 'Test Description 2',
+            createdAt: new Date('2024-07-16T12:30:00Z'),
         },
-    },
-}));
-
-jest.mock('@atc/logger', () => ({
-    logger: {
-        error: jest.fn(),
-    },
-}));
-
-const { utilFns } = require('@atc/common');
-
-describe('getNotifications Handler', () => {
-    let mockCallback: jest.MockedFunction<any>;
-    let mockCall: any;
+    ];
 
     beforeEach(() => {
         jest.clearAllMocks();
-        mockCallback = jest.fn();
-        mockCall = {
-            request: {
-                page: '1',
-                limit: '10',
-                user_id: 'user-123',
-                type: 'REGISTRATION',
-            },
-        };
     });
 
-    it('should fetch notifications successfully', async () => {
-        const mockNotifications = [
-            {
-                id: 'notification-1',
-                title: 'Test Notification',
-                description: 'Test Description',
-                type: 'REGISTRATION',
-                user_id: 'user-123',
-                read: false,
-                createdAt: new Date(),
-            },
-        ];
-
-        const mockResult = {
+    it('should return notifications successfully', async () => {
+        (getAllNotificationsByUserID as jest.Mock).mockResolvedValue({
             notifications: mockNotifications,
-            total: 1,
-        };
-
-        utilFns.removeEmptyFields.mockReturnValue(mockCall.request);
-        (getNotificationsWithPagination as jest.Mock).mockResolvedValue(
-            mockResult,
-        );
-
-        await getNotifications(mockCall, mockCallback);
-
-        expect(getNotificationsWithPagination).toHaveBeenCalledWith({
-            page: 1,
-            limit: 10,
-            user_id: 'user-123',
-            type: 'REGISTRATION',
+            total: 2,
         });
 
+        await getNotifications(call, mockCallback);
+
+        expect(getAllNotificationsByUserID).toHaveBeenCalledWith(
+            1,
+            10,
+            'user123',
+            prismaClient.NotificationType.REGISTRATION,
+        );
+
         expect(mockCallback).toHaveBeenCalledWith(null, {
-            message: 'Notifications fetched successfully',
+            message: responseMessage.NOTIFICATION.RETRIEVED,
             status: status.OK,
             data: {
-                notifications: mockNotifications,
-                total: 1,
-                page: 1,
-                limit: 10,
+                notifications: [
+                    {
+                        notification_id: 'notif-1',
+                        title: 'Test Title 1',
+                        description: 'Test Description 1',
+                        createdAt: '2024-07-15T10:00:00.000Z',
+                    },
+                    {
+                        notification_id: 'notif-2',
+                        title: 'Test Title 2',
+                        description: 'Test Description 2',
+                        createdAt: '2024-07-16T12:30:00.000Z',
+                    },
+                ],
+                total_count: 2,
             },
         });
     });
 
-    it('should handle errors gracefully', async () => {
-        utilFns.removeEmptyFields.mockReturnValue(mockCall.request);
-        (getNotificationsWithPagination as jest.Mock).mockRejectedValue(
-            new Error('Database error'),
-        );
+    it('should handle errors and return fallback response', async () => {
+        const error = new Error('DB error');
+        (getAllNotificationsByUserID as jest.Mock).mockRejectedValue(error);
 
-        await getNotifications(mockCall, mockCallback);
+        await getNotifications(call, mockCallback);
+
+        expect(logger.error).toHaveBeenCalledWith(error);
 
         expect(mockCallback).toHaveBeenCalledWith(null, {
-            message: 'Something went wrong',
+            message: errorMessage.OTHER.SOMETHING_WENT_WRONG,
             status: status.INTERNAL,
+            data: {
+                notifications: [],
+                total_count: 0,
+            },
         });
     });
 });
