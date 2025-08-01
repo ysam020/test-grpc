@@ -1,0 +1,328 @@
+syntax = "proto3";
+package catalogue;
+
+import "../widget/widget.proto";
+
+message Brand {
+  string id = 1;
+  string name = 2;
+}
+
+message DefaultResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message CreateProductGroupRequest {
+  string group_name = 1;
+  repeated string brand_ids = 2;
+  string type = 3; 
+}
+
+message ProductGroup {
+    string id = 1;
+    string group_name = 2;
+}
+
+message CreateProductGroupResponse {
+    string message = 1;
+    int32 status = 2;
+    ProductGroup data = 3;
+}
+
+message UpdateProductGroupRequest {
+    string group_id = 1;
+    string group_name = 2;
+    repeated string brand_ids = 3;
+    string type = 4; 
+}
+
+message UpdateProductGroupResponse {
+    string message = 1;
+    int32 status = 2;
+    ProductGroup data = 3;
+}
+
+message GetProductGroupRequest {
+    string group_id = 1;
+}
+
+message ProductGroupData {
+    string id = 1;
+    string group_name = 2;
+    repeated Brand brands = 3;
+    string type = 4;
+}
+
+message GetProductGroupResponse {
+    string message = 1;
+    int32 status = 2;
+    ProductGroupData data = 3;
+}
+
+message AttachProductToGroupRequest {
+    string group_id = 1;
+    repeated string product_ids = 2;
+}
+
+message GetAllProductGroupsRequest {
+    string keyword = 1;
+    string brand_id = 2;
+    int32 page = 3;
+    int32 limit = 4;
+}
+
+message ProductGroupsRes {
+    string id = 1;
+    string group_name = 2;
+    repeated Brand brands = 3;
+    string type = 4;
+    int32 no_of_products = 5;
+}
+
+message GetAllProductGroupsData {
+    repeated ProductGroupsRes product_groups = 1;
+    int32 total_count = 2;
+}
+
+message GetAllProductGroupsResponse {
+    string message = 1;
+    int32 status = 2;
+    GetAllProductGroupsData data = 3;
+}
+
+message GetAttachedProductsRequest {
+    string group_id = 1;
+    int32 page = 2;
+    int32 limit = 3;
+}
+
+message Product {
+    string product_id = 1;
+    string product_name = 2;
+    string barcode = 3;
+    string pack_size = 4;
+    double rrp = 5;
+    Brand brand = 6;
+    Brand category = 7;
+}
+
+message GetAttachedProductsData {
+    string group_id = 1;
+    repeated Product products = 2;
+    int32 total_count = 3;
+}
+
+message GetAttachedProductsResponse {
+    string message = 1;
+    int32 status = 2;
+    GetAttachedProductsData data = 3;
+}
+
+message DeleteProductGroupRequest {
+    string group_id = 1;
+}
+
+message RemoveProductsFromGroupRequest {
+    string group_id = 1;
+    repeated string product_ids = 2;
+}
+
+message ExportToExcelSheetRequest {
+    string group_id = 1;
+    string email = 2;
+}
+
+message ImagesData {
+    bytes buffer = 1;
+    string name = 2;
+    string mime_type = 3;
+    int32 content_length = 4;
+}
+
+message CreateAdvertisementRequest {
+    string title = 1;
+    string retailer_id = 2;
+    string advertisement_type = 3;
+    string start_date = 4;
+    string end_date = 5;
+    repeated ImagesData files = 6;
+    string keyword = 7; 
+}
+
+message GetAdvertisementsRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string retailer_id = 3;
+    string advertisement_type = 4;
+    int32 year = 5;
+    int32 month = 6;
+    string product_match = 7;
+    string keyword = 8;
+}
+
+message Advertisements {
+    string id = 1;
+    string title = 2;
+    BrandRetailer retailer = 3;
+    string advertisement_type = 4;
+    string start_date = 5;
+    string end_date = 6;
+    string status = 7;
+    string product_match = 8;
+    int32 match_percentage = 9;
+    string image = 10;
+    string keyword = 11;
+}
+
+message GetAdvertisementsData {
+    repeated Advertisements advertisements = 1;
+    int32 total_count = 2;
+}
+
+message GetAdvertisementsResponse {
+    string message = 1;
+    int32 status = 2;
+    GetAdvertisementsData data = 3;
+}
+
+message GetSingleAdvertisementRequest {
+    string advertisement_id = 1;
+    int32 page = 2;
+}
+
+message GetSingleAdvertisementResponse {
+    string message = 1;
+    int32 status = 2;
+    SingleAdvertisementData data = 3;
+}
+
+message SingleAdvertisementData {
+    SingleAdvertisement advertisement_details = 1;
+    string image = 2;
+    repeated PromotionalGroup promotional_groups = 3;
+    int32 total_count = 4;
+    int32 total_matches = 5;
+    int32 matched_items = 6;
+}
+
+message SingleAdvertisement {
+    string id = 1;
+    string title = 2;
+    BrandRetailer retailer = 3;
+    string advertisement_type = 4;
+    string start_date = 5;
+    string end_date = 6;
+    string keyword = 7;
+    string status = 8;
+}
+
+message PromotionalGroup {
+    string id = 1;
+    string advertisement_text = 2;
+    double retail_price = 3;
+    double promotional_price = 4;
+    repeated PromotionalMatches promotional_matches = 5;
+    repeated ProductMatches product_matches = 6;
+    bool is_matched = 7;
+    repeated BrandMatches brand_matches = 8;
+}
+
+message PromotionalMatches {
+    string id = 1;
+    string group_name = 2;
+    double retail_price = 3;
+    double promotional_price = 4;
+    double match_percentage = 5;
+    bool is_matched = 6;
+    string type = 7; 
+}
+
+message ProductMatches {
+    string id = 1;
+    string product_name = 2;
+    double retail_price = 3;
+    double promotional_price = 4;
+    double match_percentage = 5;
+    bool is_matched = 6;
+    string type = 7;
+}
+
+message BrandMatches {
+    string id = 1;
+    string brand_name = 2;
+    double match_percentage = 3;
+    bool is_matched = 4;
+    string type = 5;
+}
+
+message DeleteAdvertisementRequest {
+    string advertisement_id = 1;
+}
+
+message UpdateAdvertisementRequest {
+    string advertisement_id = 1;
+    string title = 2;
+    string retailer_id = 3;
+    string advertisement_type = 4;
+    string start_date = 5;
+    string end_date = 6;
+    string keyword = 7;
+}
+
+message ExportToExcelAdvertisementsRequest {
+    string email = 1;
+    string retailer_id = 2;
+    string advertisement_type = 3;
+    int32 year = 4;
+    int32 month = 5;
+    string product_match = 6;
+}
+
+message ToggleManualMatchRequest {
+    string ad_item_id = 1;
+}
+
+message AddAdvertisementItemRequest {
+    string ad_image_id = 1;
+    string advertisement_text = 2;
+    double retail_price = 3;
+    double promotional_price = 4;
+}
+
+message MatchAdvertisementItemRequest {
+    string ad_item_id = 1;
+    string match_id = 2;
+    string match_type = 3; 
+}
+
+message MarkAsCompleteAdvertisementRequest {
+    string advertisement_id = 1;
+}
+
+message FinishLaterAdvertisementRequest {
+    string advertisement_id = 1;
+}
+
+service CatalogueService {
+    rpc CreateProductGroup(CreateProductGroupRequest) returns (CreateProductGroupResponse);
+    rpc UpdateProductGroup(UpdateProductGroupRequest) returns (UpdateProductGroupResponse);
+    rpc GetProductGroup(GetProductGroupRequest) returns (GetProductGroupResponse);
+    rpc AttachProductToGroup(AttachProductToGroupRequest) returns (DefaultResponse);
+    rpc GetAllProductGroups(GetAllProductGroupsRequest) returns (GetAllProductGroupsResponse);
+    rpc GetAttachedProducts(GetAttachedProductsRequest) returns (GetAttachedProductsResponse);
+    rpc DeleteProductGroup(DeleteProductGroupRequest) returns (DefaultResponse);
+    rpc RemoveProductsFromGroup(RemoveProductsFromGroupRequest) returns (DefaultResponse);
+    rpc ExportToExcel(ExportToExcelSheetRequest) returns (DefaultResponse);
+    rpc CreateAdvertisement(CreateAdvertisementRequest) returns (DefaultResponse);
+    rpc GetAdvertisements(GetAdvertisementsRequest) returns (GetAdvertisementsResponse);
+    rpc GetSingleAdvertisement(GetSingleAdvertisementRequest) returns (GetSingleAdvertisementResponse);
+    rpc DeleteAdvertisement(DeleteAdvertisementRequest) returns (DefaultResponse);
+    rpc UpdateAdvertisement(UpdateAdvertisementRequest) returns (DefaultResponse);
+    rpc ExportToExcelAdvertisements(ExportToExcelAdvertisementsRequest) returns (DefaultResponse);
+    rpc ToggleManualMatch(ToggleManualMatchRequest) returns (DefaultResponse);
+    rpc AddAdvertisementItem(AddAdvertisementItemRequest) returns (DefaultResponse);
+    rpc MatchAdvertisementItem(MatchAdvertisementItemRequest) returns (DefaultResponse);
+    rpc MarkAsCompleteAdvertisement(MarkAsCompleteAdvertisementRequest) returns (DefaultResponse);
+    rpc FinishLaterAdvertisement(FinishLaterAdvertisementRequest) returns (DefaultResponse);
+}

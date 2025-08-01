@@ -1,0 +1,3 @@
+echo "[Husky] Running commit lint..."
+pnpm lint:commit
+

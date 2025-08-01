@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "Sample" ALTER COLUMN "gender" DROP DEFAULT,
+ALTER COLUMN "has_children" DROP DEFAULT,
+ALTER COLUMN "has_children" SET DATA TYPE TEXT,
+ALTER COLUMN "with_email_saved" DROP DEFAULT,
+ALTER COLUMN "with_email_saved" SET DATA TYPE TEXT;

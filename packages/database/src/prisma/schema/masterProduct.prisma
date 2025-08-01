@@ -1,0 +1,45 @@
+model MasterProduct {
+    id            String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    barcode       String    @unique(map: "masterproductmatched_unique") @db.VarChar(50)
+    product_name  String    @db.Text
+    pack_size     String    @db.VarChar(50)
+    brand_id      String    @db.Uuid
+    category_id   String    @db.Uuid
+    image_url     String?   @db.Text
+    rrp           Decimal?  @db.Decimal(10, 2)
+    size          Decimal?  @db.Decimal(10, 2)
+    unit          UnitEnum?
+    configuration String?   @db.VarChar(50)
+    a2c_size      String?   @db.VarChar(50)
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @default(now()) @updatedAt
+
+    Brand                  Brand                    @relation(fields: [brand_id], references: [id])
+    Category               Category                 @relation(fields: [category_id], references: [id], onDelete: Cascade)
+    retailerCurrentPricing RetailerCurrentPricing[]
+    BasketItem             BasketItem[]
+    PriceAlert             PriceAlert[]
+    sampleProduct          SampleProduct[]
+    ProductGroupProduct    ProductGroupProduct[]
+    AdSuggestedProduct     AdSuggestedProduct[]
+    AdvertisementItem      AdvertisementItem[]
+
+    @@unique([barcode], name: "masterproductmatched_unique")
+    @@index([product_name], map: "idx_masterproductmatched_productname")
+    @@map("MasterProduct")
+}
+
+enum UnitEnum {
+    GM
+    KG
+    ML
+    LTR
+    MG
+    PACK
+    CM
+    MM
+    M
+    V
+    W
+    OZ
+}

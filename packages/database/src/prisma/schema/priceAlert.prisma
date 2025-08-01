@@ -1,0 +1,13 @@
+model PriceAlert {
+    id           String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    user_id      String   @db.Uuid
+    product_id   String   @db.Uuid
+    target_price Decimal  @default(0.0) @db.Decimal(10, 2)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    User          User          @relation(fields: [user_id], references: [id])
+    MasterProduct MasterProduct @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+    @@unique([user_id, product_id], name: "pricealertmatched_unique")
+}

@@ -1,0 +1,30 @@
+model RetailerCurrentPricing {
+    id             String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    product_id     String            @db.Uuid
+    barcode        String            @db.VarChar(50)
+    retailer_id    String            @db.Uuid
+    retailer_code  String            @default("") @db.VarChar(100)
+    current_price  Decimal           @default(0.0) @db.Decimal(10, 2)
+    was_price      Decimal           @default(0.0) @db.Decimal(10, 2)
+    per_unit_price String            @default("") @db.VarChar(100)
+    offer_info     String?           @db.Text
+    promotion_type PromotionTypeEnum @default(RETAILER)
+    product_url    String            @default("") @db.VarChar(1000)
+    createdAt      DateTime          @default(now())
+    updatedAt      DateTime          @default(now()) @updatedAt
+    match_type     MatchTypeEnum     @default(MANUAL)
+
+    MasterProduct MasterProduct  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+    Retailer      Retailer       @relation(fields: [retailer_id], references: [id])
+    PriceHistory  PriceHistory[]
+
+    @@unique([barcode, retailer_id, retailer_code], name: "retailercurrentpricingmatched_unique")
+    @@index([product_id], map: "idx_retailercurrentpricingmatched_productid")
+    @@index([barcode], map: "idx_retailercurrentpricingmatched_barcode")
+    @@map("RetailerCurrentPricing")
+}
+
+enum MatchTypeEnum {
+    DIRECT
+    MANUAL
+}

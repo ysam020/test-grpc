@@ -1,0 +1,28 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: addtocart
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: atc-lambda
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: dev
+  region: ap-south-1
+  memorySize: 256 # Optional: Set memory for Lambda
+  timeout: 900
+  environment:
+    RAW_DATABASE_URL: ${env:RAW_DATABASE_URL}
+    DEV_DATABASE_URL: ${env:DEV_DATABASE_URL}
+    RETAILER_DATABASE_URL: ${env:RETAILER_DATABASE_URL}
+    SECRET_ACCESS_KEY: ${env:SECRET_ACCESS_KEY}
+    ACCESS_KEY_ID: ${env:ACCESS_KEY_ID}
+    REGION: ${env:REGION}
+
+functions:
+  api:
+    handler: handler.handler
+    events:
+      - httpApi: "*"
+
+plugins:
+  - serverless-offline

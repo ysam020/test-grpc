@@ -1,0 +1,18 @@
+model Widget {
+    id          String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    widget_name String
+    status      WidgetStatusEnum @default(DRAFT)
+    deploy_date DateTime?
+    createdAt   DateTime         @default(now())
+    updatedAt   DateTime         @updatedAt
+
+    WidgetComponent WidgetComponent[]
+
+    @@unique([widget_name])
+}
+
+enum WidgetStatusEnum {
+    DRAFT
+    PUBLISH
+    ACTIVE
+}

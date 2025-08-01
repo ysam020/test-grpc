@@ -1,0 +1,9 @@
+export { authPackageDefinition } from './authServiceDefinition';
+export { productPackageDefinition } from './productServiceDefinition';
+export { healthPackageDefinition } from './healthServiceDefinition';
+export { userPackageDefinition } from './userServiceDefinition';
+export { widgetPackageDefinition } from './widgetServiceDefinition';
+export { surveyPackageDefinition } from './surveyServiceDefinition';
+export { samplePackageDefinition } from './sampleServiceDefinition';
+export { notificationPackageDefinition } from './notificationServiceDefinition';
+export { cataloguePackageDefinition } from './catalogueServiceDefinition';

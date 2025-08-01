@@ -1,0 +1,58 @@
+model Survey {
+    id             String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    name           String          @unique()
+    client         String?
+    startDate      DateTime?
+    endDate        DateTime?
+    targetAudience Int?
+    location       String[]
+    state          String[]
+    age            String[]
+    gender         String
+    hasChildren    String
+    withEmailSaved String
+    is_draft       Boolean         @default(false)
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
+    questions      SurveyQuestion?
+    is_active      Boolean         @default(false)
+    is_completed   Boolean         @default(false)
+
+    SurveyResponse SurveyResponse[]
+}
+
+enum Gender {
+    MALE
+    FEMALE
+    BOTH
+}
+
+enum Location {
+    METRO
+    URBAN
+    RURAL
+    ALL
+}
+
+enum State {
+    ACT
+    NSW
+    NT
+    QLD
+    TAS
+    VIC
+    WA
+    SA
+    ALL
+}
+
+enum Age {
+    CHILD // <18
+    YOUNG_ADULT // 18-20
+    ADULT // 21-30
+    MIDDLE_AGED //31-40
+    SENIOR_ADULT //41-50
+    OLDER_ADULT //51-60
+    SENIOR // > 60
+    ALL
+}

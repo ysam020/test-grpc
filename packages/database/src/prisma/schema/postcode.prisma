@@ -1,0 +1,8 @@
+model Postcode {
+    id                String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    postcode          Int
+    locality          String
+    electorate_rating String
+
+    @@index([postcode(sort: Asc)])
+}

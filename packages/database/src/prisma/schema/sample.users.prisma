@@ -1,0 +1,11 @@
+model SampleUser {
+    sample_id String   @db.Uuid
+    user_id   String   @db.Uuid
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    sample    Sample   @relation(fields: [sample_id], references: [id])
+    user      User     @relation(fields: [user_id], references: [id])
+
+    @@id([sample_id, user_id])
+}

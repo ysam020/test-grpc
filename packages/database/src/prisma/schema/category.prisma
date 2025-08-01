@@ -1,0 +1,14 @@
+model Category {
+    id                 String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    category_name      String
+    parent_category_id String?    @db.Uuid
+    parent_category   Category?  @relation("ParentCategory", fields: [parent_category_id], references: [id], onDelete: Cascade)
+    category         Category[] @relation("ParentCategory")
+
+    ProductSlider     ProductSlider[]
+    MasterProduct     MasterProduct[]
+    suggestionDetails suggestionDetails[]
+    Banner            Banner[]
+
+    @@unique([category_name, parent_category_id], name: "categorymatched_unique")
+}

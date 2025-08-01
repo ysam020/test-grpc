@@ -1,0 +1,12 @@
+model ProductGroupProduct {
+    id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    group_id   String   @db.Uuid
+    product_id String   @db.Uuid
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @default(now()) @updatedAt
+
+    ProductGroup  ProductGroup  @relation(fields: [group_id], references: [id], onDelete: Cascade)
+    MasterProduct MasterProduct @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+    @@unique([group_id, product_id], name: "product_group_product_unique")
+}

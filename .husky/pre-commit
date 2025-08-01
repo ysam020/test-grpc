@@ -1,0 +1,8 @@
+echo "[Husky] Running Prettier..."
+pnpm format
+
+echo "[Husky] Running lint..."
+pnpm lint
+
+echo "[Husky] Running build..."
+pnpm build

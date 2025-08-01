@@ -1,0 +1,3 @@
+echo "[Husky] Running branch lint..."
+SKIP_BRANCH_LINT=${SKIP_BRANCH_LINT:-false} pnpm lint:branch
+

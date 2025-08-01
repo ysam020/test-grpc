@@ -1,0 +1,16 @@
+model Retailer {
+    id            String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    retailer_name String
+    site_url      String       @db.Text
+    createdAt     DateTime     @default(now())
+    Preference    Preference[]
+
+    ProductSlider          ProductSlider[]
+    suggestionDetails      suggestionDetails[]
+    retailerCurrentPricing RetailerCurrentPricing[]
+    Banner                 Banner[]
+    matchSuggestion        matchSuggestion[]
+    Advertisement          Advertisement[]
+
+    @@unique([retailer_name], name: "retailer_unique")
+}

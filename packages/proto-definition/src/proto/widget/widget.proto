@@ -1,0 +1,503 @@
+syntax = "proto3";
+package widget;
+
+message Empty {}
+
+message AddWidgetRequest {
+    string widget_name = 1;
+}
+
+message WidgetIDRes {
+    string id = 1;
+    string widget_name = 2;
+}
+
+message AddWidgetResponse {
+    string message = 1;
+    int32 status = 2;
+    WidgetIDRes data = 3;
+}
+
+
+message AddBannerRequest {
+    string widget_id = 1;
+    string banner_name = 2;
+    string link_type = 3;
+    string link = 4;
+    bytes image = 5;
+    int32 order = 6;
+    string mime_type = 7;
+    int32 content_length = 8;
+    string internal_link_type = 9;
+    string sample_id = 10;
+    string promotion_type = 11;
+    repeated string brand_ids = 12;
+    repeated string retailer_ids = 13;
+    repeated string category_ids = 14;
+}
+
+message BannerData {
+    string banner_id = 1;
+    string banner_name = 2;
+    string image = 3;
+    string link_type = 4;
+    string link = 5;
+    string widget_id = 6;
+    int32 order = 7;
+    string widget_component_id = 8;
+    string internal_link_type = 9;
+    string sample_id = 10;
+    string promotion_type = 11;
+    repeated string brands = 12;
+    repeated string retailers = 13;
+    repeated string categories = 14;
+}
+
+message AddBannerResponse {
+    string message = 1;
+    int32 status = 2;
+    BannerData data = 3;
+}
+
+
+message UpdateBannerRequest {
+    string id = 1;
+    string banner_name = 2;
+    string link_type = 3;
+    string link = 4;
+    bytes image = 5;
+    int32 order = 6;
+    string mime_type = 7;
+    int32 content_length = 8;
+    string internal_link_type = 9;
+    string sample_id = 10;
+    string promotion_type = 11;
+    repeated string brand_ids = 12;
+    repeated string retailer_ids = 13;
+    repeated string category_ids = 14;
+}
+
+message UpdateBannerData {
+    string banner_id = 1;
+    string banner_name = 2;
+    string image = 3;
+    string link_type = 4;
+    string link = 5;
+    string internal_link_type = 6;
+    string sample_id = 7;
+    string promotion_type = 8;
+    repeated string brands = 9;
+    repeated string retailers = 10;
+    repeated string categories = 11;
+}
+
+message UpdateBannerResponse {
+    string message = 1;
+    int32 status = 2;
+    UpdateBannerData data = 3;
+}
+
+
+message DeleteBannerRequest {
+    string id = 1;
+}
+
+message DeleteBannerResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+
+message AddWidgetSurveyRequest {
+    string widget_id = 1;
+    string survey_id = 2;
+    int32 order = 3;
+}
+
+message AddWidgetSurveyData {
+    string survey_id = 1;
+    string widget_id = 2;
+    string widget_component_id = 3;
+    string survey_name = 4;
+}
+
+message AddWidgetSurveyResponse {
+    string message = 1;
+    int32 status = 2;
+    AddWidgetSurveyData data = 3;
+}
+
+
+message DeleteWidgetSurveyRequest {
+    string widget_id = 1;
+    string survey_id = 2;    
+}
+
+message DeleteWidgetSurveyResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+
+message AddProductSliderRequest {
+    string widget_id = 1;
+    string promotion_type = 2;
+    repeated string brand_ids = 3;
+    repeated string retailer_ids = 4;
+    repeated string category_ids = 5;
+    string module_name = 6;
+    int32 number_of_product = 7;
+    string sort_by_field = 8;
+    string sort_by_order = 9;
+    string background_color = 10;
+    bytes brand_logo = 11;
+    int32 order = 12;
+    string mime_type = 13;
+    int32 content_length = 14;
+}
+
+message ProductSliderData {
+    string widget_id = 1;
+    string promotion_type = 2;
+    repeated string brands = 3;
+    repeated string retailers = 4;
+    repeated string categories = 5;
+    string module_name = 6;
+    int32 number_of_product = 7;
+    string sort_by_field = 8;
+    string sort_by_order = 9;
+    string background_color = 10;
+    string brand_logo = 11;
+    string widget_component_id = 12;
+    int32 order = 13;
+    string product_slider_id = 14;
+}
+
+message AddProductSliderResponse {
+    string message = 1;
+    int32 status = 2;
+    ProductSliderData data = 3;
+}
+
+message UpdateProductSliderRequest {
+    string product_slider_id = 1;
+    string promotion_type = 2;
+    repeated string brand_ids = 3;
+    repeated string retailer_ids = 4;
+    repeated string category_ids = 5;
+    string module_name = 6;
+    int32 number_of_product = 7;
+    string sort_by_field = 8;
+    string sort_by_order = 9;
+    string background_color = 10;
+    bytes brand_logo = 11;
+    string mime_type = 12;
+    int32 content_length = 13;
+}
+
+message UpdateProductSliderResponse {
+    string message = 1;
+    int32 status = 2;
+    ProductSliderData data = 3;
+}
+
+message DeleteProductSliderRequest {
+    string product_slider_id = 1;
+}
+
+message DeleteProductSliderResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+
+message PublishWidgetRequest {
+    string widget_id = 1;
+    string deploy_date = 2; 
+    int32 deploy_hour = 3; 
+    int32 deploy_minute = 4;
+}
+
+message PublishWidgetResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message SaveAsDraftRequest {
+    string widget_id = 1;
+    repeated ComponentOrder component_orders = 2;
+}
+
+message ComponentOrder {
+    string component_id = 1;
+    int32 order = 2;
+}
+
+message SaveAsDraftResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+
+message GetWidgetsRequest {
+    int32 page = 1;
+    int32 limit = 2;
+}
+
+message Component {
+    string widget_component_id = 1;
+    string content_type = 2;
+    int32 order = 3;
+    string name = 4;
+    repeated BrandRetailer retailers = 5;
+    repeated BrandRetailer brands = 6;
+    repeated BrandRetailer categories = 7;
+    string survey_id = 8;
+    string image = 9;
+    string link = 10;
+    string banner_id = 11;
+    string product_slider_id = 12;
+    string sort_by_field = 13;
+    string sort_by_order = 14;
+    string end_date = 15;
+    string internal_link_type = 16;
+    string sample_id = 17;
+    string sample_name = 18;
+}
+
+message BrandRetailer {
+    string id = 1;
+    string name = 2;
+}
+
+message WidgetData {
+    string widget_id = 1;
+    repeated Component component = 2;
+    string widget_name = 3;
+    bool is_active = 4;
+    string deploy_date = 5;
+}
+
+message Widget {
+    repeated WidgetData widgets = 1;
+    int32 total_count = 2;
+}
+
+message GetWidgetsResponse {
+    string message = 1;
+    int32 status = 2;
+    Widget data = 3;
+}
+
+
+message GetSingleWidgetRequest {
+    string widget_id = 1;
+}
+
+message GetSingleWidgetResponse {
+    string message = 1;
+    int32 status = 2;
+    WidgetData data = 3;
+}
+
+
+message DeleteWidgetRequest {
+    string widget_id = 1;
+}
+
+message DeleteWidgetResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message GetActiveWidgetResponse {
+    string message = 1;
+    int32 status = 2;
+    WidgetData data = 3;
+}
+
+
+message GetBannerRequest {
+    string banner_id = 1;
+}
+
+message BannerRes {
+    string banner_id = 1;
+    string banner_name = 2;
+    string image = 3;
+    string link_type = 4;
+    string link = 5;
+    string internal_link_type = 6;
+    string sample_id = 7;
+    string promotion_type = 8;
+    repeated BrandRetailer brands = 9;
+    repeated BrandRetailer retailers = 10;
+    repeated BrandRetailer categories = 11;
+    string sample_name = 12;
+}
+
+message GetBannerResponse {
+    string message = 1;
+    int32 status = 2;
+    BannerRes data = 3;
+}
+
+message GetProductSliderRequest {
+    string product_slider_id = 1;
+}
+
+message GetProductSliderData {
+    string product_slider_id = 1;
+    string promotion_type = 2;
+    repeated BrandRetailer brands = 3;
+    repeated BrandRetailer retailers = 4;
+    repeated BrandRetailer categories = 5;
+    string module_name = 6;
+    int32 number_of_product = 7;
+    string sort_by_field = 8;
+    string sort_by_order = 9;
+    string background_color = 10;
+    string brand_logo = 11;
+}
+
+message GetProductSliderResponse {
+    string message = 1;
+    int32 status = 2;
+    GetProductSliderData data = 3;
+}
+
+message ToggleWidgetActivationRequest {
+    string widget_id = 1;
+}
+
+message ToggleWidgetActivationResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+message WidgetMetadata {
+    int32 widget_order = 1;
+}
+
+message GetActiveBanner {
+    string banner_name = 1;
+    string link_type = 2;
+    string banner_path = 3;
+    string image = 4;
+    string internal_link_type = 5;
+
+}
+
+message Banner {
+    GetActiveBanner banner = 1;
+}
+
+message WidgetFilter {
+    string sample_id = 1;
+    string promotion_type = 2;
+    repeated string brand_id = 3;
+    repeated string retailer_id = 4;
+    repeated string category_id = 5;
+}
+
+message GetActiveBannerData {
+    string widget_type = 1;
+    WidgetMetadata widget_metadata = 2;
+    Banner widget_data = 3;
+    WidgetFilter widget_filter = 4;
+}
+
+message WidgetComponent {
+    string id = 1;
+    string widget_id = 2;
+    string component_type = 3;
+    int32 order = 4;
+    string reference_model_id = 5;
+    string reference_model = 6;
+    string updatedAt = 7;
+    string createdAt = 8;
+}
+
+message GetActiveWidgetComponent {
+    string widget_id = 1;
+    string widget_name = 2;
+    repeated WidgetComponent component = 3;
+}
+
+message GetActiveLayoutData {
+    GetActiveWidgetComponent widget = 1;
+    repeated GetActiveBannerData banner = 2;
+}
+
+message GetActiveLayoutRequest {
+    string widget_id = 1;
+}
+
+message GetActiveLayoutResponse {
+    string message = 1;
+    int32 status = 2;
+    GetActiveLayoutData data = 3;
+}
+
+message GetActiveWidgetRequest {
+    string id = 1;
+}
+
+message UpdateWidgetSurveyRequest {
+    string widget_component_id = 1;
+    string survey_id = 2;
+}
+
+message UpdateWidgetSurveyResponse {
+    string message = 1;
+    int32 status = 2;
+    AddWidgetSurveyData data = 3;
+}
+
+message FindWidgetsBySampleRequest {
+    string sample_id = 1;
+}
+
+message WidgetName {
+    repeated string widget_names = 1;
+}
+
+message FindWidgetsBySampleResponse {
+    string message = 1;
+    int32 status = 2;
+    WidgetName data = 3;
+}
+
+message RemoveSurveyFromWidgetRequest {
+    string id = 1;
+}
+
+message RemoveSurveyFromWidgetResponse {
+    string message = 1;
+    int32 status = 2;
+}
+
+service WidgetService {
+    rpc AddWidget (AddWidgetRequest) returns (AddWidgetResponse);
+    rpc AddBanner (AddBannerRequest) returns (AddBannerResponse);
+    rpc UpdateBanner (UpdateBannerRequest) returns (UpdateBannerResponse);
+    rpc DeleteBanner (DeleteBannerRequest) returns (DeleteBannerResponse);
+    rpc AddWidgetSurvey (AddWidgetSurveyRequest) returns (AddWidgetSurveyResponse);
+    rpc DeleteWidgetSurvey (DeleteWidgetSurveyRequest) returns (DeleteWidgetSurveyResponse);
+    rpc AddProductSlider (AddProductSliderRequest) returns (AddProductSliderResponse);
+    rpc UpdateProductSlider (UpdateProductSliderRequest) returns (UpdateProductSliderResponse);
+    rpc DeleteProductSlider (DeleteProductSliderRequest) returns (DeleteProductSliderResponse);
+    rpc PublishWidget (PublishWidgetRequest) returns (PublishWidgetResponse);
+    rpc SaveAsDraft (SaveAsDraftRequest) returns (SaveAsDraftResponse);
+    rpc GetWidgets (GetWidgetsRequest) returns (GetWidgetsResponse);
+    rpc GetSingleWidget (GetSingleWidgetRequest) returns (GetSingleWidgetResponse);
+    rpc DeleteWidget (DeleteWidgetRequest) returns (DeleteWidgetResponse);
+    rpc GetActiveWidget (Empty) returns (GetActiveWidgetResponse);
+    rpc GetBanner (GetBannerRequest) returns (GetBannerResponse);
+    rpc GetProductSlider (GetProductSliderRequest) returns (GetProductSliderResponse);
+    rpc ToggleWidgetActivation (ToggleWidgetActivationRequest) returns (ToggleWidgetActivationResponse);
+    rpc GetActiveLayout (GetActiveLayoutRequest) returns (GetActiveLayoutResponse);
+    rpc UpdateWidgetSurvey (UpdateWidgetSurveyRequest) returns (UpdateWidgetSurveyResponse);
+    rpc FindWidgetsBySample (FindWidgetsBySampleRequest) returns (FindWidgetsBySampleResponse);
+    rpc RemoveSurveyFromWidget (RemoveSurveyFromWidgetRequest) returns (RemoveSurveyFromWidgetResponse);
+}

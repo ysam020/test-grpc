@@ -1,0 +1,28 @@
+model Sample {
+    id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    client           String?
+    description      String
+    start_date       DateTime?
+    end_date         DateTime?
+    maximum_sample   Int
+    location         String[]
+    age              String[]
+    state            String[]
+    gender           String
+    has_children     String
+    with_email_saved String
+    is_active        Boolean   @default(false)
+    is_completed     Boolean   @default(false)
+    is_draft         Boolean
+    to_get_product   String
+    task_to_do       String
+    inquiries        String
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
+
+    questions SampleQuestion[]
+    product   SampleProduct?
+    samples   SampleUser[]
+    reviews   SampleReview[]
+    Banner    Banner[]
+}

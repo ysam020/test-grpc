@@ -1,0 +1,7 @@
+model UserLoginActivity {
+    id       String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    user_id  String   @db.Uuid
+    login_at DateTime @default(now())
+
+    User User @relation(fields: [user_id], references: [id])
+}

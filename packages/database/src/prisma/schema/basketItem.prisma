@@ -1,0 +1,13 @@
+model BasketItem {
+    id                String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    basket_id         String   @db.Uuid
+    master_product_id String   @db.Uuid
+    quantity          Int      @default(1)
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+
+    basket         Basket        @relation(fields: [basket_id], references: [id])
+    master_product MasterProduct @relation(fields: [master_product_id], references: [id], onDelete: Cascade)
+
+    @@unique([basket_id, master_product_id], name: "basketitemmatched_unique")
+}

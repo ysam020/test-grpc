@@ -1,0 +1,18 @@
+model ProductGroup {
+    id         String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    group_name String
+    brands     Brand[]
+    createdAt  DateTime             @default(now())
+    updatedAt  DateTime             @default(now()) @updatedAt
+    type       ProductGroupTypeEnum
+
+    ProductGroupProduct ProductGroupProduct[]
+    AdSuggestedGroup    AdSuggestedGroup[]
+    AdvertisementItem   AdvertisementItem[]
+}
+
+enum ProductGroupTypeEnum {
+    PROMOTIONAL_BUNDLE
+    MULTI_PACK
+    SIZE_VARIANT
+}

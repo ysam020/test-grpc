@@ -1,0 +1,15 @@
+model Preference {
+    id              String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    user_id         String     @unique @db.Uuid
+    user            User       @relation(fields: [user_id], references: [id])
+    retailers       Retailer[]
+    location        String?
+    age             Int?
+    state           String?
+    number_of_child Int?
+    number_of_adult Int?
+    phone_number    String?
+    gender          String?
+    createdAt       DateTime   @default(now())
+    updatedAt       DateTime   @updatedAt
+}

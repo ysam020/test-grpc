@@ -1,0 +1,9 @@
+model Supplier {
+    id            String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    supplier_name String   @db.VarChar(50)
+    brands        Brand[]
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    @@unique([supplier_name], name: "unique_supplier_name")
+}

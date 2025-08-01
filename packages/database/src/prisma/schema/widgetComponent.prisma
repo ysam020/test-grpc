@@ -1,0 +1,25 @@
+model WidgetComponent {
+    id                 String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    widget_id          String              @db.Uuid
+    widget             Widget              @relation(fields: [widget_id], references: [id])
+    component_type     WidgetComponentType
+    order              Int
+    reference_model_id String              @db.Uuid
+    reference_model    ReferenceModelType
+    createdAt          DateTime            @default(now())
+    updatedAt          DateTime            @updatedAt
+
+    @@unique([widget_id, reference_model_id])
+}
+
+enum WidgetComponentType {
+    BANNER
+    PRODUCT_SLIDER
+    SURVEY
+}
+
+enum ReferenceModelType {
+    BANNER
+    PRODUCT_SLIDER
+    SURVEY
+}

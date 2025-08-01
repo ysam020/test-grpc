@@ -1,0 +1,13 @@
+model SampleReview {
+    id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    sample_id String   @db.Uuid
+    user_id   String   @db.Uuid
+    rating    Decimal? @default(0.0) @db.Decimal(10, 2)
+    comment   String?
+    image     String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    sample    Sample   @relation(fields: [sample_id], references: [id])
+
+    @@unique([sample_id, user_id])
+}
