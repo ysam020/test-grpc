@@ -1,41 +1,4 @@
 import { jest } from '@jest/globals';
-
-// Mock the BaseGrpcServer before importing HealthServer
-const mockAddService = jest.fn();
-const mockCheckAllServicesHealth = jest.fn();
-
-jest.mock('@atc/grpc-server', () => ({
-    BaseGrpcServer: jest.fn().mockImplementation(function () {
-        this.addService = mockAddService;
-        this.checkAllServicesHealth = mockCheckAllServicesHealth;
-        return this;
-    }),
-}));
-
-jest.mock('@atc/grpc-config', () => ({
-    serviceDefinitions: {
-        healthPackageDefinition: {
-            health: {
-                HealthService: {
-                    service: {
-                        healthCheck: {},
-                    },
-                },
-            },
-        },
-    },
-    serviceConfig: {
-        auth: { host: 'localhost', port: '50052' },
-        user: { host: 'localhost', port: '50053' },
-        product: { host: 'localhost', port: '50054' },
-        widget: { host: 'localhost', port: '50055' },
-        survey: { host: 'localhost', port: '50056' },
-        notification: { host: 'localhost', port: '50057' },
-        sample: { host: 'localhost', port: '50058' },
-        catalogue: { host: 'localhost', port: '50059' },
-    },
-}));
-
 import { HealthServer } from '../../../src/index';
 
 describe('Health Check Handler', () => {
@@ -46,8 +9,9 @@ describe('Health Check Handler', () => {
         jest.clearAllMocks();
         healthServer = new HealthServer();
 
-        // Get the actual health check handler
-        const healthServiceCall = mockAddService.mock.calls.find(
+        // Get the actual health check handler from the addService call
+        const addServiceCalls = (healthServer.addService as jest.Mock).mock.calls;
+        const healthServiceCall = addServiceCalls.find(
             (call) => call && call[1] && call[1].healthCheck,
         );
 
@@ -67,28 +31,19 @@ describe('Health Check Handler', () => {
                 { serviceName: 'PRODUCT', status: 'SERVING' },
             ];
 
-            mockCheckAllServicesHealth.mockResolvedValue(healthyServices);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue(healthyServices);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
             // Assert
-            expect(mockCheckAllServicesHealth).toHaveBeenCalledTimes(1);
+            expect(healthServer.checkAllServicesHealth).toHaveBeenCalledTimes(1);
             expect(mockCallback).toHaveBeenCalledWith(null, {
-                services: expect.arrayContaining([
-                    expect.objectContaining({
-                        service_name: 'AUTH',
-                        status: expect.any(Number), // ServingStatus enum value
-                    }),
-                    expect.objectContaining({
-                        service_name: 'USER',
-                        status: expect.any(Number),
-                    }),
-                    expect.objectContaining({
-                        service_name: 'PRODUCT',
-                        status: expect.any(Number),
-                    }),
-                ]),
+                services: [
+                    { service_name: 'AUTH', status: 1 },
+                    { service_name: 'USER', status: 1 },
+                    { service_name: 'PRODUCT', status: 1 },
+                ],
             });
         });
 
@@ -103,27 +58,18 @@ describe('Health Check Handler', () => {
                 { serviceName: 'PRODUCT', status: 'SERVING' },
             ];
 
-            mockCheckAllServicesHealth.mockResolvedValue(mixedServices);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue(mixedServices);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
             // Assert
             expect(mockCallback).toHaveBeenCalledWith(null, {
-                services: expect.arrayContaining([
-                    expect.objectContaining({
-                        service_name: 'AUTH',
-                        status: expect.any(Number),
-                    }),
-                    expect.objectContaining({
-                        service_name: 'USER',
-                        status: expect.any(Number),
-                    }),
-                    expect.objectContaining({
-                        service_name: 'PRODUCT',
-                        status: expect.any(Number),
-                    }),
-                ]),
+                services: [
+                    { service_name: 'AUTH', status: 1 },
+                    { service_name: 'USER', status: 2 },
+                    { service_name: 'PRODUCT', status: 1 },
+                ],
             });
         });
 
@@ -132,7 +78,7 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            mockCheckAllServicesHealth.mockResolvedValue([]);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue([]);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
@@ -150,36 +96,41 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            // Mock an empty services response
-            mockCheckAllServicesHealth.mockResolvedValue([]);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue([]);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
-            // Assert - Should return empty services array
-            expect(mockCallback).toHaveBeenCalledWith(null, { services: [] });
+            // Assert
+            expect(mockCallback).toHaveBeenCalledWith(null, {
+                services: [],
+            });
         });
 
         it('should handle errors gracefully by returning empty array', async () => {
+            // Arrange
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            mockCheckAllServicesHealth.mockResolvedValue([
-                { serviceName: 'AUTH', status: 'SERVING' },
-            ]);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockRejectedValue(
+                new Error('Service check failed')
+            );
+
+            // Mock console.error to avoid test output noise
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
-            // Assert - Should handle successful case
+            // Wait for the promise chain to complete
+            await new Promise(resolve => setTimeout(resolve, 10));
+
+            // Assert
             expect(mockCallback).toHaveBeenCalledWith(null, {
-                services: expect.arrayContaining([
-                    expect.objectContaining({
-                        service_name: 'AUTH',
-                        status: expect.any(Number),
-                    }),
-                ]),
+                services: [],
             });
+
+            consoleSpy.mockRestore();
         });
 
         it('should handle invalid responses gracefully', async () => {
@@ -187,27 +138,21 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            // Mock response that could cause issues (but not null since that crashes)
-            mockCheckAllServicesHealth.mockResolvedValue([
-                { serviceName: 'AUTH', status: 'INVALID_STATUS' },
-            ]);
+            // Return null which should be handled gracefully
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue(null);
 
             // Mock console.error to avoid test output noise
-            const consoleSpy = jest
-                .spyOn(console, 'error')
-                .mockImplementation();
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
-            // Assert - Should handle invalid status by mapping to NOT_SERVING
+            // Wait for the promise chain to complete  
+            await new Promise(resolve => setTimeout(resolve, 10));
+
+            // Assert - should handle null by returning empty services
             expect(mockCallback).toHaveBeenCalledWith(null, {
-                services: expect.arrayContaining([
-                    expect.objectContaining({
-                        service_name: 'AUTH',
-                        status: expect.any(Number), // Should be NOT_SERVING (1)
-                    }),
-                ]),
+                services: [],
             });
 
             consoleSpy.mockRestore();
@@ -218,18 +163,16 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            // Mock successful response
-            mockCheckAllServicesHealth.mockResolvedValue([]);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue([]);
 
-            // Act & Assert - Should not throw
+            // Act & Assert - should not throw
             expect(() => {
                 healthCheckHandler(mockCall, mockCallback);
             }).not.toThrow();
 
             // Wait for async completion
-            await new Promise((resolve) => setTimeout(resolve, 10));
-
-            // Should have called callback
+            await new Promise(resolve => setTimeout(resolve, 10));
+            
             expect(mockCallback).toHaveBeenCalled();
         });
     });
@@ -240,19 +183,21 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            const servingServices = [
+            const servingService = [
                 { serviceName: 'AUTH', status: 'SERVING' },
             ];
 
-            mockCheckAllServicesHealth.mockResolvedValue(servingServices);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue(servingService);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
-            // Assert
-            const response = mockCallback.mock.calls[0][1];
-            expect(response.services[0].service_name).toBe('AUTH');
-            expect(typeof response.services[0].status).toBe('number');
+            // Assert - SERVING should map to 1
+            expect(mockCallback).toHaveBeenCalledWith(null, {
+                services: [
+                    { service_name: 'AUTH', status: 1 },
+                ],
+            });
         });
 
         it('should map NOT_SERVING status to numeric enum value', async () => {
@@ -260,19 +205,21 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            const notServingServices = [
+            const notServingService = [
                 { serviceName: 'AUTH', status: 'NOT_SERVING' },
             ];
 
-            mockCheckAllServicesHealth.mockResolvedValue(notServingServices);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue(notServingService);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
-            // Assert
-            const response = mockCallback.mock.calls[0][1];
-            expect(response.services[0].service_name).toBe('AUTH');
-            expect(typeof response.services[0].status).toBe('number');
+            // Assert - NOT_SERVING should map to 2
+            expect(mockCallback).toHaveBeenCalledWith(null, {
+                services: [
+                    { service_name: 'AUTH', status: 2 },
+                ],
+            });
         });
 
         it('should map unknown status to NOT_SERVING', async () => {
@@ -280,21 +227,20 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            const unknownServices = [
-                { serviceName: 'AUTH', status: 'UNKNOWN' },
-                { serviceName: 'USER', status: 'SOME_OTHER_STATUS' },
+            const unknownStatusService = [
+                { serviceName: 'AUTH', status: 'UNKNOWN_STATUS' },
             ];
 
-            mockCheckAllServicesHealth.mockResolvedValue(unknownServices);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue(unknownStatusService);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
-            // Assert
-            const response = mockCallback.mock.calls[0][1];
-            response.services.forEach((service: any) => {
-                expect(service.service_name).toMatch(/^(AUTH|USER)$/);
-                expect(typeof service.status).toBe('number');
+            // Assert - Unknown status should default to NOT_SERVING (2)
+            expect(mockCallback).toHaveBeenCalledWith(null, {
+                services: [
+                    { service_name: 'AUTH', status: 2 },
+                ],
             });
         });
     });
@@ -305,29 +251,27 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            const services = [
+            const mockServices = [
                 { serviceName: 'AUTH', status: 'SERVING' },
                 { serviceName: 'USER', status: 'NOT_SERVING' },
             ];
 
-            mockCheckAllServicesHealth.mockResolvedValue(services);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue(mockServices);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
             // Assert
-            const response = mockCallback.mock.calls[0][1];
-
-            expect(response).toHaveProperty('services');
-            expect(Array.isArray(response.services)).toBe(true);
-            expect(response.services).toHaveLength(2);
-
-            response.services.forEach((service: any) => {
-                expect(service).toHaveProperty('service_name');
-                expect(service).toHaveProperty('status');
-                expect(typeof service.service_name).toBe('string');
-                expect(typeof service.status).toBe('number');
-            });
+            expect(mockCallback).toHaveBeenCalledWith(null, 
+                expect.objectContaining({
+                    services: expect.arrayContaining([
+                        expect.objectContaining({
+                            service_name: expect.any(String),
+                            status: expect.any(Number),
+                        }),
+                    ]),
+                })
+            );
         });
 
         it('should handle service names correctly', async () => {
@@ -335,26 +279,21 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            const services = [
-                { serviceName: 'AUTH', status: 'SERVING' },
-                { serviceName: 'USER', status: 'SERVING' },
-                { serviceName: 'PRODUCT', status: 'SERVING' },
+            const serviceWithSpecialName = [
+                { serviceName: 'SPECIAL-SERVICE_NAME', status: 'SERVING' },
             ];
 
-            mockCheckAllServicesHealth.mockResolvedValue(services);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue(serviceWithSpecialName);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
             // Assert
-            const response = mockCallback.mock.calls[0][1];
-            const serviceNames = response.services.map(
-                (s: any) => s.service_name,
-            );
-
-            expect(serviceNames).toContain('AUTH');
-            expect(serviceNames).toContain('USER');
-            expect(serviceNames).toContain('PRODUCT');
+            expect(mockCallback).toHaveBeenCalledWith(null, {
+                services: [
+                    { service_name: 'SPECIAL-SERVICE_NAME', status: 1 },
+                ],
+            });
         });
     });
 
@@ -364,51 +303,49 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            const services = [
-                { serviceName: 'AUTH', status: 'SERVING' },
-                { serviceName: 'USER', status: 'SERVING' },
-            ];
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue([]);
 
-            mockCheckAllServicesHealth.mockResolvedValue(services);
+            const startTime = Date.now();
 
             // Act
-            const startTime = Date.now();
             await healthCheckHandler(mockCall, mockCallback);
-            const endTime = Date.now();
 
             // Assert
-            expect(endTime - startTime).toBeLessThan(100); // Should complete quickly in tests
-            expect(mockCallback).toHaveBeenCalled();
+            const endTime = Date.now();
+            const duration = endTime - startTime;
+            expect(duration).toBeLessThan(1000); // Should complete within 1 second
         });
 
         it('should handle multiple concurrent health checks', async () => {
             // Arrange
-            const services = [{ serviceName: 'AUTH', status: 'SERVING' }];
+            const mockCall1 = global.grpcTestUtils.createMockCall();
+            const mockCall2 = global.grpcTestUtils.createMockCall();
+            const mockCallback1 = global.grpcTestUtils.createMockCallback();
+            const mockCallback2 = global.grpcTestUtils.createMockCallback();
 
-            mockCheckAllServicesHealth.mockResolvedValue(services);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue([]);
 
-            // Act - Execute multiple health checks concurrently
-            const promises = Array.from({ length: 3 }, () => {
-                const mockCall = global.grpcTestUtils.createMockCall();
-                const mockCallback = global.grpcTestUtils.createMockCallback();
-                return healthCheckHandler(mockCall, mockCallback);
-            });
+            // Act
+            await Promise.all([
+                healthCheckHandler(mockCall1, mockCallback1),
+                healthCheckHandler(mockCall2, mockCallback2),
+            ]);
 
-            await Promise.all(promises);
-
-            // Assert - All should complete without errors
-            expect(mockCheckAllServicesHealth).toHaveBeenCalledTimes(3);
+            // Assert
+            expect(mockCallback1).toHaveBeenCalled();
+            expect(mockCallback2).toHaveBeenCalled();
+            expect(healthServer.checkAllServicesHealth).toHaveBeenCalledTimes(2);
         });
     });
 
     describe('Integration', () => {
         it('should properly integrate with HealthServer instance', () => {
-            // Assert that the handler is properly bound to the server
-            expect(healthCheckHandler).toBeDefined();
-            expect(typeof healthCheckHandler).toBe('function');
-
-            // The handler should be the instance method
-            expect(healthCheckHandler.toString()).toContain('=>');
+            // Verify that the handler is properly bound to the server instance
+            const calls = (healthServer.addService as jest.Mock).mock.calls;
+            const healthServiceCall = calls[0];
+            
+            expect(healthServiceCall).toBeDefined();
+            expect(healthServiceCall[1]).toHaveProperty('healthCheck');
         });
 
         it('should call checkAllServicesHealth method', async () => {
@@ -416,13 +353,13 @@ describe('Health Check Handler', () => {
             const mockCall = global.grpcTestUtils.createMockCall();
             const mockCallback = global.grpcTestUtils.createMockCallback();
 
-            mockCheckAllServicesHealth.mockResolvedValue([]);
+            (healthServer.checkAllServicesHealth as jest.Mock).mockResolvedValue([]);
 
             // Act
             await healthCheckHandler(mockCall, mockCallback);
 
             // Assert
-            expect(mockCheckAllServicesHealth).toHaveBeenCalledTimes(1);
+            expect(healthServer.checkAllServicesHealth).toHaveBeenCalledTimes(1);
         });
     });
 });

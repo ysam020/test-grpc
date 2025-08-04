@@ -9,6 +9,7 @@ class MockBaseGrpcServer {
   start = jest.fn();
   stop = jest.fn();
   bind = jest.fn();
+  checkAllServicesHealth = jest.fn();
 }
 
 module.exports = {

@@ -1403,6 +1403,8 @@ global.mockErrors = {
         };
     }
 
+    // Add this method to your MockGenerator class
+
     // Generate Jest config file
     generateJestConfig() {
         this.step('Step 9: Generating Jest config file (jest.config.js)');
@@ -1454,6 +1456,10 @@ global.mockErrors = {
         coverageDirectory: 'coverage',
         coverageReporters: ['text', 'lcov', 'html'],
         setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+        moduleNameMapping: {
+            '^@/(.*)$': '<rootDir>/src/$1',
+            '^@atc/(.*)$': '<rootDir>/__tests__/__mocks__/@atc/$1',
+        },
         clearMocks: true,
         restoreMocks: true,
         resetMocks: true,
@@ -1594,10 +1600,18 @@ global.mockErrors = {
             this.info(`📁 Generated files in: ${this.mockDir}/@atc/`);
             this.info(`📁 Jest setup file: jest.setup.js`);
             this.info(`📁 Jest config file: jest.config.js`);
+            this.info(`📁 Jest setup file: jest.setup.js`);
             
             // Show Jest configuration suggestion
             console.log('');
             this.log('📋 Jest Configuration:', 'yellow');
+            console.log('Add this to your Jest config:');
+            console.log(JSON.stringify({
+                setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+                moduleNameMapping: {
+                    "^@atc/(.*)$": "<rootDir>/__tests__/__mocks__/@atc/$1"
+                }
+            }, null, 2));
             
         } catch (error) {
             this.error(`Error: ${error.message}`);
